@@ -1,0 +1,7 @@
+﻿bin/
+obj/
+*.db
+*.sqlite
+appsettings.Development.json
+appsettings.*.local.json
+.env
