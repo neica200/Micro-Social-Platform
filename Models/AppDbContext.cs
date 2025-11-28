@@ -15,6 +15,7 @@ namespace Micro_social_app.Models
         public DbSet<Follow> Follows { get; set; }
         public DbSet<FollowRequest> FollowRequests { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
 
 
@@ -72,6 +73,19 @@ namespace Micro_social_app.Models
                 .HasOne(p => p.User)
                 .WithMany()
                 .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // COMMENT
+            builder.Entity<Comment>()
+                .HasOne(c => c.Post)
+                .WithMany()
+                .HasForeignKey(c => c.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Comment>()
+                .HasOne(c => c.User)
+                .WithMany()
+                .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
