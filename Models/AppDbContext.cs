@@ -16,6 +16,7 @@ namespace Micro_social_app.Models
         public DbSet<FollowRequest> FollowRequests { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Reaction> Reactions { get; set; }
 
 
 
@@ -87,6 +88,23 @@ namespace Micro_social_app.Models
                 .WithMany()
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // REACTION
+            builder.Entity<Reaction>()
+                .HasOne(r => r.Post)
+                .WithMany()
+                .HasForeignKey(r => r.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Reaction>()
+                .HasOne(r => r.User)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Reaction>()
+                .HasIndex(r => new { r.UserId, r.PostId })
+                .IsUnique();
         }
     }
 }
