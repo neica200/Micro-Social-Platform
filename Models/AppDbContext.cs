@@ -12,12 +12,15 @@ namespace Micro_social_app.Models
         }
 
         public DbSet<Profile> Profiles { get; set; }
+        public DbSet<Follow> Follows { get; set; }
+        public DbSet<FollowRequest> FollowRequests { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // PROFILE CONFIG
+            // PROFILE
             builder.Entity<Profile>()
                 .HasIndex(p => p.UserId)
                 .IsUnique();
@@ -26,6 +29,40 @@ namespace Micro_social_app.Models
                 .HasOne(p => p.User)
                 .WithOne()
                 .HasForeignKey<Profile>(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            //FOLLOW
+            builder.Entity<Follow>()
+                .HasIndex(f => new { f.FollowerId, f.FollowedId })
+                .IsUnique();
+
+            builder.Entity<Follow>()
+                .HasOne(f => f.Follower)
+                .WithMany()
+                .HasForeignKey(f => f.FollowerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Follow>()
+                .HasOne(f => f.Followed)
+                .WithMany()
+                .HasForeignKey(f => f.FollowedId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // FOLLOW REQUEST
+            builder.Entity<FollowRequest>()
+                .HasIndex(r => new { r.SenderId, r.ReceiverId })
+                .IsUnique();
+
+            builder.Entity<FollowRequest>()
+                .HasOne(r => r.Sender)
+                .WithMany()
+                .HasForeignKey(r => r.SenderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<FollowRequest>()
+                .HasOne(r => r.Receiver)
+                .WithMany()
+                .HasForeignKey(r => r.ReceiverId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
