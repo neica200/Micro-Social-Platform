@@ -14,6 +14,8 @@ namespace Micro_social_app.Models
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<FollowRequest> FollowRequests { get; set; }
+        public DbSet<Post> Posts { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -63,6 +65,13 @@ namespace Micro_social_app.Models
                 .HasOne(r => r.Receiver)
                 .WithMany()
                 .HasForeignKey(r => r.ReceiverId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // POST
+            builder.Entity<Post>()
+                .HasOne(p => p.User)
+                .WithMany()
+                .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
