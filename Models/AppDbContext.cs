@@ -17,6 +17,9 @@ namespace Micro_social_app.Models
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Reaction> Reactions { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<GroupMember> GroupMembers { get; set; }
+        public DbSet<GroupMessage> GroupMessages { get; set; }
 
 
 
@@ -105,6 +108,46 @@ namespace Micro_social_app.Models
             builder.Entity<Reaction>()
                 .HasIndex(r => new { r.UserId, r.PostId })
                 .IsUnique();
+
+            // GROUP
+            builder.Entity<Group>()
+                .HasOne(g => g.Moderator)
+                .WithMany()
+                .HasForeignKey(g => g.ModeratorId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // GROUP MEMBER
+            builder.Entity<GroupMember>()
+                .HasOne(gm => gm.Group)
+                .WithMany()
+                .HasForeignKey(gm => gm.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<GroupMember>()
+                .HasOne(gm => gm.User)
+                .WithMany()
+                .HasForeignKey(gm => gm.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<GroupMember>()
+                .HasIndex(gm => new { gm.GroupId, gm.UserId })
+                .IsUnique();
+
+            // GROUP MESSAGE
+            builder.Entity<GroupMessage>()
+                .HasOne(gm => gm.Group)
+                .WithMany()
+                .HasForeignKey(gm => gm.GroupId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<GroupMessage>()
+                .HasOne(gm => gm.User)
+                .WithMany()
+                .HasForeignKey(gm => gm.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
         }
+
     }
 }
