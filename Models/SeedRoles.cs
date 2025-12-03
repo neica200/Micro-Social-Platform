@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Micro_social_app.Models
 {
@@ -9,10 +8,9 @@ namespace Micro_social_app.Models
         {
             string[] roles = { "Admin", "User" };
 
-            foreach (var role in roles)
+            foreach (string role in roles)
             {
-  
-                if (!await roleManager.Roles.AnyAsync(r => r.Name == role))
+                if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
@@ -20,4 +18,3 @@ namespace Micro_social_app.Models
         }
     }
 }
-
