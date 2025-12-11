@@ -10,7 +10,7 @@ namespace Micro_social_app.Models
 
         [Required]
         public string ModeratorId { get; set; }
-        public IdentityUser Moderator { get; set; }
+        public ApplicationUser Moderator { get; set; }
 
         [Required]
         [MaxLength(200)]
@@ -26,5 +26,9 @@ namespace Micro_social_app.Models
 
         [Required]
         public bool IsDeleted { get; set; } = false;
+
+        // prop de navigare
+        public virtual ICollection<GroupMember> GroupMembers { get; set; } = [];
+        public virtual ICollection<GroupMessage> GroupMessages {  get; set; } = [];
     }
 }

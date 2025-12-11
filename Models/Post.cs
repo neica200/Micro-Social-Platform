@@ -9,8 +9,8 @@ namespace Micro_social_app.Models
         public int Id { get; set; }
 
         [Required]
-        public string UserId { get; set; }
-        public IdentityUser User { get; set; }
+        public string UserId { get; set; } // practic asta e fk - o postare e postata de un user
+        public ApplicationUser User { get; set; } // asta e prop de navigatie
 
         [MaxLength(2000)]
         public string Content { get; set; }
@@ -29,5 +29,9 @@ namespace Micro_social_app.Models
 
         [MaxLength(500)]
         public string ErrorMessage { get; set; }
+
+        // proprietati de navigare
+        public virtual ICollection<Comment>? Comments { get; set; } = [];
+        public virtual ICollection<Reaction>? Reactions { get; set; } = [];
     }
 }
