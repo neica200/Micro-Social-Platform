@@ -4,8 +4,10 @@ namespace Micro_social_app.Models
 {
     public static class SeedRoles
     {
-        public static async Task InitializeAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task InitializeAsync(IServiceProvider serviceProvider)
         {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
             string[] roles = { "Admin", "User" };
 
             foreach (string role in roles)
