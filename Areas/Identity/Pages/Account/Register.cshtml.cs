@@ -105,10 +105,8 @@ namespace Micro_social_app.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // --- ATRIBUIRE ROL MANUALA (Direct in DB) ---
                     try
                     {
-                        // A. Asiguram ca rolul "User" exista in tabela AspNetRoles
                         var role = await _roleManager.FindByNameAsync("User");
                         if (role == null)
                         {
@@ -116,15 +114,12 @@ namespace Micro_social_app.Areas.Identity.Pages.Account
                             await _roleManager.CreateAsync(role);
                         }
 
-                        // B. Inseram legatura direct in tabela de legatura (AspNetUserRoles)
-                        // Bypassam complet _userManager.AddToRoleAsync care facea figuri
                         var userRole = new IdentityUserRole<string>
                         {
                             UserId = user.Id,
                             RoleId = role.Id
                         };
 
-                        // Adaugam in context si salvam
                         _context.UserRoles.Add(userRole);
                         await _context.SaveChangesAsync();
 
@@ -132,16 +127,11 @@ namespace Micro_social_app.Areas.Identity.Pages.Account
                     }
                     catch (Exception ex)
                     {
-                        // Daca nici asa nu merge, afisam eroarea clar
                         _logger.LogError(ex, "Eroare la INSERT manual al rolului.");
                         ModelState.AddModelError(string.Empty, "Eroare Rol Manual: " + ex.Message);
-                        // Optional: stergem userul daca rolul a esuat
-                        // await _userManager.DeleteAsync(user);
+                        await _userManager.DeleteAsync(user);
                         return Page();
                     }
-                    // ---------------------------------------------
-
-                    // Daca am ajuns aici, totul e verde. Logam userul.
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return LocalRedirect(returnUrl);
                 }
