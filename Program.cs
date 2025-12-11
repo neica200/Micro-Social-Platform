@@ -15,15 +15,18 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 //NPGSQL    
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString, npgsqlOptions =>
+    {
+      
+        npgsqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorCodesToAdd: null);
+    }));
 
 //Identity si roluri
-
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-})
-    .AddRoles<IdentityRole>()
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>() 
     .AddEntityFrameworkStores<AppDbContext>();
 
 var app = builder.Build();
@@ -48,11 +51,10 @@ app.MapStaticAssets();
 
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    await SeedRoles.InitializeAsync(roleManager);
-
-
+    var services = scope.ServiceProvider;
+    await SeedRoles.InitializeAsync(services);
 }
+
 
 app.MapControllerRoute(
     name: "default",
