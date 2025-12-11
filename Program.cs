@@ -25,7 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }));
 
 //Identity si roluri
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>() 
     .AddEntityFrameworkStores<AppDbContext>();
 

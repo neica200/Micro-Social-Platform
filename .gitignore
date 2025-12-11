@@ -1,7 +1,9 @@
 ﻿bin/
 obj/
 *.db
-*.sqlite
+.sqlite
 appsettings.Development.json
-appsettings.*.local.json
+appsettings..local.json
 .env
+*.user
+.vs/

@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace Micro_social_app.Models
 {
-    public class AppDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -12,6 +13,7 @@ namespace Micro_social_app.Models
         }
 
         public DbSet<Profile> Profiles { get; set; }
+     
         public DbSet<Follow> Follows { get; set; }
         public DbSet<FollowRequest> FollowRequests { get; set; }
         public DbSet<Post> Posts { get; set; }
@@ -32,11 +34,13 @@ namespace Micro_social_app.Models
                 .HasIndex(p => p.UserId)
                 .IsUnique();
 
-            builder.Entity<Profile>()
-                .HasOne(p => p.User)
-                .WithOne()
+            builder.Entity<ApplicationUser>()
+                .HasOne(u => u.Profile)
+                .WithOne(p => p.User)
                 .HasForeignKey<Profile>(p => p.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+          
             
             //FOLLOW
             builder.Entity<Follow>()
@@ -45,13 +49,13 @@ namespace Micro_social_app.Models
 
             builder.Entity<Follow>()
                 .HasOne(f => f.Follower)
-                .WithMany()
+                .WithMany(u => u.Following)
                 .HasForeignKey(f => f.FollowerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Follow>()
                 .HasOne(f => f.Followed)
-                .WithMany()
+                .WithMany(u => u.Followers)
                 .HasForeignKey(f => f.FollowedId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -62,46 +66,46 @@ namespace Micro_social_app.Models
 
             builder.Entity<FollowRequest>()
                 .HasOne(r => r.Sender)
-                .WithMany()
+                .WithMany(u => u.SentFollowRequests)
                 .HasForeignKey(r => r.SenderId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<FollowRequest>()
                 .HasOne(r => r.Receiver)
-                .WithMany()
+                .WithMany(u => u.ReceivedFollowRequests)
                 .HasForeignKey(r => r.ReceiverId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // POST
+            // POST user -> post
             builder.Entity<Post>()
                 .HasOne(p => p.User)
-                .WithMany()
+                .WithMany(u => u.Posts)
                 .HasForeignKey(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // COMMENT
+            // COMMENT user -> comments post -> comments
             builder.Entity<Comment>()
                 .HasOne(c => c.Post)
-                .WithMany()
+                .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Comment>()
                 .HasOne(c => c.User)
-                .WithMany()
+                .WithMany(u => u.Comments)
                 .HasForeignKey(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // REACTION
             builder.Entity<Reaction>()
                 .HasOne(r => r.Post)
-                .WithMany()
+                .WithMany(p => p.Reactions)
                 .HasForeignKey(r => r.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Reaction>()
                 .HasOne(r => r.User)
-                .WithMany()
+                .WithMany(u => u.Reactions)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -112,20 +116,20 @@ namespace Micro_social_app.Models
             // GROUP
             builder.Entity<Group>()
                 .HasOne(g => g.Moderator)
-                .WithMany()
+                .WithMany(u => u.ModeratedGroups)
                 .HasForeignKey(g => g.ModeratorId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // GROUP MEMBER
             builder.Entity<GroupMember>()
                 .HasOne(gm => gm.Group)
-                .WithMany()
+                .WithMany(g => g.GroupMembers)
                 .HasForeignKey(gm => gm.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<GroupMember>()
                 .HasOne(gm => gm.User)
-                .WithMany()
+                .WithMany(u => u.GroupsIn)
                 .HasForeignKey(gm => gm.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -136,20 +140,20 @@ namespace Micro_social_app.Models
             // GROUP MESSAGE
             builder.Entity<GroupMessage>()
                 .HasOne(gm => gm.Group)
-                .WithMany()
+                .WithMany(g => g.GroupMessages)
                 .HasForeignKey(gm => gm.GroupId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<GroupMessage>()
                 .HasOne(gm => gm.User)
-                .WithMany()
+                .WithMany(u => u.GroupMessages)
                 .HasForeignKey(gm => gm.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // AI MOD LOG
             builder.Entity<AIModLog>()
                 .HasOne(log => log.User)
-                .WithMany()
+                .WithMany(u => u.AIModLogs)
                 .HasForeignKey(log => log.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

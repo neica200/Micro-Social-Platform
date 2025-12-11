@@ -17,7 +17,7 @@ namespace Micro_social_app.Models
 
         [Required]
         public string UserId { get; set; }
-        public IdentityUser User { get; set; }
+        public ApplicationUser User { get; set; }
 
         [Required]
         public string OriginalText { get; set; }

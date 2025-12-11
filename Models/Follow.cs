@@ -10,10 +10,10 @@ namespace Micro_social_app.Models
 
         [Required]
         public string FollowerId { get; set; }
-        public IdentityUser Follower { get; set; }
+        public ApplicationUser Follower { get; set; }
 
         [Required]
         public string FollowedId { get; set; }
-        public IdentityUser Followed { get; set; }
+        public ApplicationUser Followed { get; set; }
     }
 }

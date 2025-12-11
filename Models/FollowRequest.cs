@@ -10,11 +10,11 @@ namespace Micro_social_app.Models
 
         [Required]
         public string SenderId { get; set; }
-        public IdentityUser Sender { get; set; }
+        public ApplicationUser Sender { get; set; }
 
         [Required]
         public string ReceiverId { get; set; }
-        public IdentityUser Receiver { get; set; }
+        public ApplicationUser Receiver { get; set; }
 
         [Required]
         public string Status { get; set; } = "Pending";
