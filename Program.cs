@@ -29,6 +29,19 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddRoles<IdentityRole>() 
     .AddEntityFrameworkStores<AppDbContext>();
 
+// Configurare Supabase Storage
+var supabaseUrl = builder.Configuration["Supabase:Url"];
+var supabaseKey = builder.Configuration["Supabase:Key"];
+
+var options = new Supabase.SupabaseOptions
+{
+    AutoRefreshToken = true,
+    AutoConnectRealtime = true
+};
+
+builder.Services.AddScoped<Supabase.Client>(_ =>
+    new Supabase.Client(supabaseUrl, supabaseKey, options));
+
 var app = builder.Build();
 
 
