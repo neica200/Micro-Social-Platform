@@ -249,9 +249,24 @@ namespace Micro_social_app.Controllers
             {
                 if (post.UserId==_userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
+                    //sterg si fisierele din wwwroot
+                    if (!string.IsNullOrEmpty(post.ImageUrl))
+                    {
+                        var imgPath = Path.Combine(_env.WebRootPath, post.ImageUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                        if (System.IO.File.Exists(imgPath)) 
+                            System.IO.File.Delete(imgPath);
+                    }
+
+                    if (!string.IsNullOrEmpty(post.VideoUrl))
+                    {
+                        var vidPath = Path.Combine(_env.WebRootPath, post.VideoUrl.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                        if (System.IO.File.Exists(vidPath)) 
+                            System.IO.File.Delete(vidPath);
+                    }
+
                     db.Posts.Remove(post);
                     db.SaveChanges();
-                    TempData["message"] = "The post was succesfully deleted";
+                    TempData["message"] = "The post was succesfully deleted!";
                     TempData["messageType"] = "alert-success";
                     return RedirectToAction("Index");
                 }
