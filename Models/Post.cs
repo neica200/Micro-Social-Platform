@@ -8,18 +8,18 @@ namespace Micro_social_app.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        public string UserId { get; set; } // practic asta e fk - o postare e postata de un user
-        public ApplicationUser User { get; set; } // asta e prop de navigatie
+        public string? UserId { get; set; } // practic asta e fk - o postare e postata de un user
+
+        public ApplicationUser? User { get; set; } // asta e prop de navigatie
 
         [MaxLength(2000)]
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         [MaxLength(500)]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
         [MaxLength(500)]
-        public string VideoUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -28,7 +28,7 @@ namespace Micro_social_app.Models
         public string AIStatus { get; set; } = "Approved"; // Approved, Rejected
 
         [MaxLength(500)]
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         // proprietati de navigare
         public virtual ICollection<Comment>? Comments { get; set; } = [];

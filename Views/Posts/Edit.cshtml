@@ -1,0 +1,71 @@
+﻿@model Micro_social_app.Models.Post
+
+<h2 class="text-center mt-5">Editare postare</h2>
+<br />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <form method="post"
+                  asp-controller="Posts"
+                  asp-action="Edit"
+                  asp-route-id="@Model.Id"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label">Continut postare</label>
+                    <textarea asp-for="Content"
+                              class="form-control"
+                              rows="4"></textarea>
+                </div>
+
+                @* Afisare media curenta *@
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Imagine curenta</label>
+                        <img src="@Model.ImageUrl" class="img-fluid rounded d-block" />
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Video curent</label>
+                        <video class="w-100 rounded" controls>
+                            <source src="@Model.VideoUrl" />
+                        </video>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <label class="form-label">Inlocuieste imaginea (optional)</label>
+                    <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Inlocuieste video-ul (optional)</label>
+                    <input type="file" name="VideoFile" class="form-control" accept="video/*" />
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success">Salveaza modificarile</button>
+
+                    <a class="btn btn-secondary ms-2"
+                       asp-controller="Posts"
+                       asp-action="Show"
+                       asp-route-id="@Model.Id">
+                        Inapoi
+                    </a>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
