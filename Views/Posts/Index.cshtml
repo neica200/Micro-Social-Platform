@@ -1,0 +1,142 @@
+﻿<div class="container mt-4">
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-md-8 col-lg-6">
+
+            @foreach (var post in ViewBag.Posts)
+            {
+                var commentsCount = post.Comments.Count;
+                var reactionsCount = post.Reactions.Count;
+
+                <div class="card mb-4 shadow-sm">
+
+                    <!-- HEADER -->
+                    <div class="card-header bg-white d-flex align-items-center">
+                        <strong>@post.User.UserName</strong>
+                        <span class="text-muted ms-2" style="font-size: 0.85rem;">
+                            @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                        </span>
+                    </div>
+
+                    <!-- MEDIA -->
+                    @if (!string.IsNullOrEmpty(post.ImageUrl))
+                    {
+                        <img src="@post.ImageUrl" class="insta-media" />
+                    }
+                    else if (!string.IsNullOrEmpty(post.VideoUrl))
+                    {
+                        <video class="insta-media" controls>
+                            <source src="@post.VideoUrl" />
+                        </video>
+                    }
+
+                    <!-- BODY -->
+                    <div class="card-body">
+
+                        @if (!string.IsNullOrEmpty(post.Content))
+                        {
+                            <p class="mb-2">
+                                <strong>@post.User.UserName</strong>
+                                @post.Content
+                            </p>
+                        }
+
+                        <p class="text-muted mb-2" style="font-size: 0.9rem;">
+                            ❤️ @reactionsCount likes · 💬 @commentsCount comments
+                        </p>
+
+                        <a asp-controller="Posts"
+                           asp-action="Show"
+                           asp-route-id="@post.Id"
+                           class="text-muted text-decoration-none">
+                            Vezi comentariile
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+</div>
+
+
+@* 
+<br />
+<h2 class="text-center">Afisare postari</h2>
+<br />
+
+@if (ViewBag.Message != null)
+{
+    <h2 class="p-3 rounded-3 text-center mb-5 alert @ViewBag.Alert">@ViewBag.Message</h2>
+}
+<br />
+
+@* Buton New – doar pentru user logat *@
+@* @if (ViewBag.IsLogged == true)
+{
+    <div class="text-center mb-4">
+        <a class="btn btn-success"
+           asp-controller="Posts"
+           asp-action="New">
+            Adauga postare
+        </a>
+    </div>
+} *@
+
+
+@* Lista postarilor
+@foreach (var post in ViewBag.Posts)
+{
+    var commentsCount = post.Comments.Count;
+    var reactionsCount = post.Reactions.Count;
+
+    <a asp-controller="Posts"
+       asp-action="Show"
+       asp-route-id="@post.Id"
+       style="text-decoration:none; color:inherit;">
+
+    <div class="card mb-4">
+        <div class="card-body">
+
+            <h5 class="card-title">@post.User.UserName</h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+                @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+            </h6>
+
+            <hr />
+
+           
+
+            @if (post.ImageUrl != null && post.ImageUrl != "")
+            {
+                <img src="@post.ImageUrl" class="img-fluid rounded mb-2" />
+            }
+
+            @if (post.VideoUrl != null && post.VideoUrl != "")
+            {
+                <video class="w-100 rounded mb-2" controls>
+                    <source src="@post.VideoUrl" />
+                </video>
+            }
+                @if (post.Content != null && post.Content != "")
+                {
+                    <p class="card-text" style="white-space: pre-wrap;">
+                        @post.Content
+                    </p>
+                }
+
+            <hr />
+
+            <p class="text-muted">
+                ❤️ @reactionsCount reactii
+                💬 @commentsCount comentarii |
+                
+            </p>
+                
+      
+    </div>
+    </a>
+} *@

@@ -1,0 +1,165 @@
+﻿@model Micro_social_app.Models.Post
+
+<br />
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <!-- POSTAREA -->
+            <div class="card mb-4">
+                <div class="card-body">
+
+                    <h5 class="card-title">@Model.User.UserName</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                    </h6>
+
+                    <hr />
+
+
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-fluid rounded mb-3" />
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                    {
+                        <video class="w-100 rounded mb-3" controls>
+                            <source src="@Model.VideoUrl" />
+                        </video>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.Content))
+                    {
+                        <p class="card-text" style="white-space: pre-wrap;">
+                            @Model.Content
+                        </p>
+                    }
+
+                    <hr />
+
+                    <p class="text-muted">
+                        ❤️ @Model.Reactions.Count reactii |
+                        💬 @Model.Comments.Count comentarii
+                    </p>
+
+                    <!-- BUTON DELETE (ADMIN sau OWNER) -->
+                    <div class="d-flex gap-2">
+                        @if (ViewBag.IsLogged == true && ViewBag.CurrUser == Model.UserId)
+                        {
+                            <a class="btn btn-success btn-sm"
+                               asp-controller="Posts"
+                               asp-action="Edit"
+                               asp-route-id="@Model.Id">
+                                Editeaza
+                            </a>
+                        }
+
+                        @if (ViewBag.IsAdmin == true || ViewBag.CurrUser == Model.UserId)
+                        {
+                            <form method="post" asp-controller="Posts" asp-action="Delete" asp-route-id="@Model.Id">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-danger btn-sm" type="submit">Sterge</button>
+                            </form>
+                        }
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <!-- ADAUGARE COMENTARIU -->
+            @if (ViewBag.IsLogged == true)
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+
+                        <h5 class="mb-3">Adauga comentariu</h5>
+
+                        <form method="post"
+                              asp-controller="Comments"
+                              asp-action="New">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden" name="PostId" value="@Model.Id" />
+
+                            <div class="mb-3">
+                                <textarea name="Content"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Scrie un comentariu..."></textarea>
+                            </div>
+
+                            <button class="btn btn-success">
+                                Adauga comentariu
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="text-center text-muted">
+                    Trebuie sa fii logat pentru a adauga comentarii.
+                </p>
+            }
+
+            <!-- LISTA COMENTARII -->
+            <h4 class="mb-3">Comentarii</h4>
+
+            @if (Model.Comments.Count == 0)
+            {
+                <p class="text-muted">Nu exista comentarii.</p>
+            }
+            else
+            {
+                @foreach (var comment in Model.Comments)
+                {
+                    <div class="card mb-2">
+                        <div class="card-body">
+
+                            <h6 class="mb-1">@comment.User.UserName</h6>
+                            <small class="text-muted">
+                                @comment.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                            </small>
+
+                            <p class="mt-2">@comment.Content</p>
+
+                            <!-- DELETE COMENTARIU -->
+                            @if (ViewBag.IsAdmin == true || ViewBag.CurrUser == comment.UserId)
+                            {
+                                <form method="post"
+                                      asp-controller="Comments"
+                                      asp-action="Delete"
+                                      asp-route-id="@comment.Id"
+                                      class="d-inline">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button class="btn btn-danger btn-sm">
+                                        Sterge
+                                    </button>
+                                </form>
+                            }
+
+                        </div>
+                    </div>
+                }
+            }
+
+            <br />
+
+            <a class="btn btn-secondary"
+               asp-controller="Posts"
+               asp-action="Index">
+                Inapoi la postari
+            </a>
+
+        </div>
+    </div>
+</div>
