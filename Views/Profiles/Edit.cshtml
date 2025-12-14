@@ -1,0 +1,74 @@
+﻿@model Micro_social_app.Models.Profile
+
+@{
+    ViewData["Title"] = "Editare Profil";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Profilul Meu</h4>
+                </div>
+                <div class="card-body">
+
+                    <form asp-action="Edit" enctype="multipart/form-data" method="post">
+
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="ProfileImageUrl" />
+
+                        <div class="text-center mb-4">
+                            @if (!string.IsNullOrEmpty(Model.ProfileImageUrl))
+                            {
+                                <img src="@Model.ProfileImageUrl"
+                                     alt="Poza Profil"
+                                     class="rounded-circle img-thumbnail"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ImageUpload" class="form-label fw-bold">Schimbă Poza</label>
+                            <input asp-for="ImageUpload" class="form-control" type="file" accept="image/*" />
+                            <span asp-validation-for="ImageUpload" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">Nume Complet</label>
+                            <input asp-for="FullName" class="form-control" placeholder="Cum te numești?" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Despre tine</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Scrie ceva despre tine..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" asp-for="IsPrivate" />
+                            <label class="form-check-label" asp-for="IsPrivate">
+                                Profil Privat
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success btn-lg">Salvează Modificările</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 namespace Micro_social_app.Models
 {
@@ -28,5 +29,9 @@ namespace Micro_social_app.Models
 
         [Required]
         public bool IsPrivate { get; set; }
+
+        [NotMapped] // Nu apare in bd
+        [Display(Name = "Upload Photo")]
+        public IFormFile? ImageUpload { get; set; }
     }
 }
