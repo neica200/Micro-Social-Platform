@@ -1,115 +1,89 @@
 ﻿@model Micro_social_app.Models.Post
 
-<h2 class="text-center mt-5">Adaugare postare</h2>
-<br />
-
-<div class="container">
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-12 col-md-8 col-lg-6">
 
-            <form method="post"
-                  asp-controller="Posts"
-                  asp-action="New"
-                  enctype="multipart/form-data">
+            <div class="card shadow-sm border-0">
 
-                @Html.AntiForgeryToken()
+                <!-- HEADER -->
+                <div class="card-header bg-white text-center fw-bold">
+                    Create new post
+                </div>
 
-                @if (ViewBag.Message != null)
-                {
-                    <div class="alert @ViewBag.Alert text-center">
-                        @ViewBag.Message
+                <form method="post"
+                      asp-controller="Posts"
+                      asp-action="New"
+                      enctype="multipart/form-data">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="card-body">
+
+                        @if (ViewBag.Message != null)
+                        {
+                            <div class="alert @ViewBag.Alert text-center">
+                                @ViewBag.Message
+                            </div>
+                        }
+
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <!-- CONTENT -->
+                        <div class="mb-3">
+                            <textarea asp-for="Content"
+                                      class="form-control border-0"
+                                      rows="4"
+                                      placeholder="Write a caption..."
+                                      style="resize:none;"></textarea>
+                        </div>
+
+                        <hr />
+
+                        <!-- IMAGE UPLOAD -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                📷 Add photo
+                            </label>
+                            <input type="file"
+                                   name="ImageFile"
+                                   class="form-control"
+                                   accept="image/*" />
+                        </div>
+
+                        <!-- VIDEO UPLOAD -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                🎥 Add video
+                            </label>
+                            <input type="file"
+                                   name="VideoFile"
+                                   class="form-control"
+                                   accept="video/*" />
+                        </div>
+
                     </div>
-                }
 
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <!-- FOOTER -->
+                    <div class="card-footer bg-white d-flex justify-content-between">
 
-                <!-- CONTINUT -->
-                <div class="mb-3">
-                    <label class="form-label">Continut postare</label>
-                    <textarea asp-for="Content"
-                              class="form-control"
-                              rows="4"
-                              placeholder="Scrie ceva..."></textarea>
-                </div>
+                        <a asp-controller="Posts"
+                           asp-action="Index"
+                           class="btn btn-light">
+                            Cancel
+                        </a>
 
-                <!-- IMAGINE -->
-                <div class="mb-3">
-                    <label class="form-label">Imagine (optional)</label>
-                    <input type="file"
-                           name="ImageFile"
-                           class="form-control"
-                           accept="image/*" />
-                </div>
+                        <button type="submit"
+                                class="btn btn-primary fw-semibold">
+                            Share
+                        </button>
 
-                <!-- VIDEO -->
-                <div class="mb-3">
-                    <label class="form-label">Video (optional)</label>
-                    <input type="file"
-                           name="VideoFile"
-                           class="form-control"
-                           accept="video/*" />
-                </div>
+                    </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-success">
-                        Adauga postare
-                    </button>
+                </form>
 
-                    <a class="btn btn-secondary ms-2"
-                       asp-controller="Posts"
-                       asp-action="Index">
-                        Inapoi
-                    </a>
-                </div>
-
-            </form>
+            </div>
 
         </div>
     </div>
 </div>
-
-
-@* @model Micro_social_app.Models.Post
-
-<h2 class="text-center mt-5">Adăugare postare</h2>
-<br />
-
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-6 offset-3">
-
-            <form method="post" asp-action="New" asp-controller="Posts">
-                @Html.AntiForgeryToken()
-
-                <div asp-validation-summary="All" class="text-danger"></div>
-
-                <div class="form-group">
-                    <label asp-for="Content" class="form-label">Text</label>
-                    <br />
-                    <textarea asp-for="Content" class="form-control" rows="4"></textarea>
-                    <span asp-validation-for="Content" class="text-danger"></span>
-                    <br /><br />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="ImageUrl" class="form-label">Image URL (opțional)</label>
-                    <br />
-                    <input asp-for="ImageUrl" class="form-control" />
-                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                    <br /><br />
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="VideoUrl" class="form-label">Video URL (opțional)</label>
-                    <br />
-                    <input asp-for="VideoUrl" class="form-control" />
-                    <span asp-validation-for="VideoUrl" class="text-danger"></span>
-                    <br /><br />
-                </div>
-
-                <button class="btn btn-success" type="submit">Adaugă postarea</button>
-                <a class="btn btn-secondary ms-2" asp-action="Index" asp-controller="Posts">Înapoi</a>
-            </form>
-        </div>
-    </div>
-</div> *@
