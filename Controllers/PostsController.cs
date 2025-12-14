@@ -32,13 +32,14 @@ namespace Micro_social_app.Controllers
         public IActionResult Index()
         {
             var posts = db.Posts
-                          .Include(p => p.User)
-                          .Include(p => p.Comments)
-                          .Include(p => p.Reactions)
+                          .Include(a => a.User)
+                               .ThenInclude(c => c.Profile)
+                            .Include(a => a.Comments)
+                           .Include(a => a.Reactions)
                           .OrderByDescending(p => p.CreatedAt)
                           .ToList();
 
-            ViewBag.Posts = posts;
+       
 
             if (TempData.ContainsKey("message"))
             {
@@ -47,16 +48,18 @@ namespace Micro_social_app.Controllers
             }
 
             SetAccessRights();
-            return View();
+            return View(posts);
         }
 
         public IActionResult Show(int id)
         {
             Post? post = db.Posts
-                           .Include(a => a.Comments)
-                               .ThenInclude(c => c.User)
-                           .Include(a => a.Reactions)
                            .Include(a => a.User)
+                               .ThenInclude(c => c.Profile)
+                            .Include(a => a.Comments)
+                                .ThenInclude(c => c.User)
+                                    .ThenInclude(u => u.Profile)
+                           .Include(a => a.Reactions)
                            .Where(a => a.Id == id)
                            .FirstOrDefault();
 
@@ -139,8 +142,11 @@ namespace Micro_social_app.Controllers
         [Authorize(Roles ="User,Admin")]
         public IActionResult Edit(int id)
         {
-            Post? post = db.Posts.Find(id);
-                            
+            var post = db.Posts
+                            .Include(p => p.User)
+                                      .ThenInclude(u => u.Profile)
+                            .FirstOrDefault(p => p.Id == id);
+
 
             if (post is null)
                 return NotFound();
@@ -161,7 +167,10 @@ namespace Micro_social_app.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Post requestPost, IFormFile? ImageFile, IFormFile? VideoFile)
         {
-            Post? post = db.Posts.Find(id);
+            var post = db.Posts
+                            .Include(p => p.User)
+                                 .ThenInclude(u => u.Profile)
+                            .FirstOrDefault(p => p.Id == id);
 
             if (post == null)
                 return NotFound();
@@ -197,7 +206,7 @@ namespace Micro_social_app.Controllers
 
             if (!hasText && !hasExistingMedia && !hasNewImg && !hasNewVid)
             {
-                ModelState.AddModelError("", "Postarea nu poate fi goală.");
+                ModelState.AddModelError("", "Post can't  be empty.");
             }
 
             // update text
@@ -207,7 +216,7 @@ namespace Micro_social_app.Controllers
             if (hasNewImg)
             {
                 if (ImageFile!.ContentType.StartsWith("image/") == false)
-                    ModelState.AddModelError("", "Fișierul încărcat la imagine nu este valid.");
+                    ModelState.AddModelError("", "Invalid file.");
                 else
                     post.ImageUrl = SaveFile(ImageFile, "images");
             }
@@ -216,14 +225,14 @@ namespace Micro_social_app.Controllers
             if (hasNewVid)
             {
                 if (VideoFile!.ContentType.StartsWith("video/") == false)
-                    ModelState.AddModelError("", "Fișierul încărcat la video nu este valid.");
+                    ModelState.AddModelError("", "Invalid file.");
                 else
                     post.VideoUrl = SaveFile(VideoFile, "videos");
             }
 
             if (ModelState.IsValid)
             {
-                TempData["message"] = "Postarea a fost modificata.";
+                TempData["message"] = "Post succes.";
                 TempData["messageType"] = "alert-success";
 
                 db.SaveChanges();

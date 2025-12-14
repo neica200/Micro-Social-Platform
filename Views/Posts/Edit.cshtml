@@ -1,70 +1,120 @@
 ﻿@model Micro_social_app.Models.Post
 
-<h2 class="text-center mt-5">Editare postare</h2>
-<br />
+@{
+    string initial = "?";
+    if (Model.User != null && !string.IsNullOrEmpty(Model.User.UserName))
+    {
+        initial = Model.User.UserName.Substring(0, 1).ToUpper();
+    }
 
-<div class="container">
+    string fullName =
+        Model.User?.Profile?.FullName
+        ?? Model.User?.UserName
+        ?? "User";
+
+    string profileImg = Model.User?.Profile?.ProfileImageUrl ?? "";
+
+    if (!string.IsNullOrEmpty(profileImg) &&
+        !profileImg.StartsWith("/") &&
+        !profileImg.StartsWith("http"))
+    {
+        profileImg = "/" + profileImg;
+    }
+}
+
+
+<div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-12 col-md-8 col-lg-6">
 
-            <form method="post"
-                  asp-controller="Posts"
-                  asp-action="Edit"
-                  asp-route-id="@Model.Id"
-                  enctype="multipart/form-data">
+            <div class="insta-post shadow-sm">
 
-                @Html.AntiForgeryToken()
+                <!-- HEADER (ca la postare) -->
+                <div class="insta-header">
 
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <div class="d-flex align-items-center gap-2">
+                        @if (!string.IsNullOrEmpty(profileImg))
+                        {
+                            <img src="@profileImg" class="insta-avatar" alt="avatar" />
+                        }
+                        else
+                        {
+                            <div class="insta-avatar-fallback">@initial</div>
+                        }
 
-                <div class="mb-3">
-                    <label class="form-label">Continut postare</label>
-                    <textarea asp-for="Content"
-                              class="form-control"
-                              rows="4"></textarea>
+                        <div>
+                            <div class="insta-username">@fullName</div>
+                            <div class="insta-sub">Edit post</div>
+                        </div>
+                    </div>
+
                 </div>
 
-                @* Afisare media curenta *@
+                <!-- MEDIA preview (optional) -->
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
-                    <div class="mb-3">
-                        <label class="form-label">Imagine curenta</label>
-                        <img src="@Model.ImageUrl" class="img-fluid rounded d-block" />
-                    </div>
+                    <img src="@Model.ImageUrl" class="insta-media" alt="current image" />
                 }
-
-                @if (!string.IsNullOrEmpty(Model.VideoUrl))
+                else if (!string.IsNullOrEmpty(Model.VideoUrl))
                 {
-                    <div class="mb-3">
-                        <label class="form-label">Video curent</label>
-                        <video class="w-100 rounded" controls>
-                            <source src="@Model.VideoUrl" />
-                        </video>
-                    </div>
+                    <video class="insta-media" controls>
+                        <source src="@Model.VideoUrl" />
+                    </video>
                 }
 
-                <div class="mb-3">
-                    <label class="form-label">Inlocuieste imaginea (optional)</label>
-                    <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                <hr class="insta-divider" />
+
+                <!-- FORM -->
+                <div class="insta-meta">
+                    <form method="post"
+                          asp-controller="Posts"
+                          asp-action="Edit"
+                          asp-route-id="@Model.Id"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Continut</label>
+                            <textarea asp-for="Content"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Scrie ceva..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Inlocuieste imaginea (optional)</label>
+                            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+                            <div class="insta-sub mt-1">Format recomandat: JPG/PNG</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Inlocuieste video-ul (optional)</label>
+                            <input type="file" name="VideoFile" class="form-control" accept="video/*" />
+                            <div class="insta-sub mt-1">Format recomandat: MP4</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Salveaza
+                            </button>
+
+                            <a class="btn btn-outline-secondary w-100"
+                               asp-controller="Posts"
+                               asp-action="Show"
+                               asp-route-id="@Model.Id">
+                                Anuleaza
+                            </a>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Inlocuieste video-ul (optional)</label>
-                    <input type="file" name="VideoFile" class="form-control" accept="video/*" />
-                </div>
+                <hr class="insta-divider" />
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-success">Salveaza modificarile</button>
 
-                    <a class="btn btn-secondary ms-2"
-                       asp-controller="Posts"
-                       asp-action="Show"
-                       asp-route-id="@Model.Id">
-                        Inapoi
-                    </a>
-                </div>
-
-            </form>
+            </div>
 
         </div>
     </div>

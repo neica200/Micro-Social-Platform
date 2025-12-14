@@ -1,31 +1,228 @@
-﻿<div class="container mt-4">
-    <div class="row justify-content-center">
+﻿@model List<Micro_social_app.Models.Post>
 
+<div class="container mt-4">
+    <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-6">
 
-            @foreach (var post in ViewBag.Posts)
+            @foreach (var post in Model)
             {
-                var commentsCount = post.Comments.Count;
-                var reactionsCount = post.Reactions.Count;
+                string fullName =
+                post.User?.Profile?.FullName
+                ?? post.User?.UserName
+                ?? "User";
+
+                string profileImg = post.User?.Profile?.ProfileImageUrl ?? "";
+                string initial = !string.IsNullOrEmpty(fullName)
+                ? fullName.Substring(0, 1).ToUpper()
+                : "U";
+
+                int commentsCount = post.Comments?.Count ?? 0;
+                int reactionsCount = post.Reactions?.Count ?? 0;
 
                 <div class="card mb-4 shadow-sm">
 
                     <!-- HEADER -->
-                    <div class="card-header bg-white d-flex align-items-center">
-                        <strong>@post.User.UserName</strong>
-                        <span class="text-muted ms-2" style="font-size: 0.85rem;">
-                            @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
-                        </span>
+                    <div class="card-header bg-white d-flex align-items-center gap-2">
+
+                        <a asp-controller="Profiles"
+                           asp-action="Index"
+                           asp-route-userId="@post.UserId"
+                           class="text-decoration-none">
+
+                            @if (!string.IsNullOrEmpty(profileImg))
+                            {
+                                <img src="@profileImg"
+                                     class="rounded-circle"
+                                     style="width:40px;height:40px;object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-secondary text-white d-flex
+                                                    align-items-center justify-content-center"
+                                     style="width:40px;height:40px;">
+                                    @initial
+                                </div>
+                            }
+                        </a>
+
+                        <div>
+                            <a asp-controller="Profiles"
+                               asp-action="Index"
+                               asp-route-userId="@post.UserId"
+                               class="fw-bold text-dark text-decoration-none">
+                                @fullName
+                            </a>
+
+                            <div class="text-muted" style="font-size:0.8rem;">
+                                @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- MEDIA -->
                     @if (!string.IsNullOrEmpty(post.ImageUrl))
                     {
-                        <img src="@post.ImageUrl" class="insta-media" />
+                        <img src="@post.ImageUrl" class="w-100" />
                     }
                     else if (!string.IsNullOrEmpty(post.VideoUrl))
                     {
-                        <video class="insta-media" controls>
+                        <video class="w-100" controls>
+                            <source src="@post.VideoUrl" />
+                        </video>
+                    }
+
+                    <!-- BODY -->
+                    <div class="card-body">
+
+                        <!-- ACTION BAR -->
+                        <div class="ig-actions-row">
+                            <button type="button" class="ig-icon-btn" title="Like">
+                                <i class="bi bi-heart"></i>
+                            </button>
+
+                            <a asp-controller="Posts"
+                               asp-action="Show"
+                               asp-route-id="@post.Id"
+                               class="ig-icon-btn ig-icon-link"
+                               title="Comment">
+                                <i class="bi bi-chat"></i>
+                            </a>
+
+                            <button type="button"
+                                    class="ig-icon-btn ms-auto"
+                                    title="Share">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+
+                        <!-- LIKES -->
+                        <div class="ig-likes">
+                            @reactionsCount likes
+                        </div>
+
+                        <!-- CAPTION -->
+                        @if (!string.IsNullOrEmpty(post.Content))
+                        {
+                            <div class="ig-caption">
+                                <span class="ig-caption-user"><b>@fullName</b></span>
+                                <span class="ig-caption-text">@post.Content</span>
+                            </div>
+                        }
+
+                    <!-- COMMENTS LINK -->
+                    <a asp-controller="Posts"
+                       asp-action="Show"
+                       asp-route-id="@post.Id"
+                       class="ig-view-comments">
+                        @(commentsCount > 0
+                                                ? $"View all {commentsCount} comments"
+                                                : "Add a comment…")
+                    </a>
+
+                    </div>
+
+                </div>
+                        }
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @model List<Micro_social_app.Models.Post>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            @foreach (var post in Model)
+            {
+                string fullName = post.User?.Profile?.FullName
+                ?? post.User?.UserName
+                ?? "User";
+
+                string profileImg = post.User?.Profile?.ProfileImageUrl ?? "";
+                string initial = !string.IsNullOrEmpty(fullName)
+                ? fullName.Substring(0, 1).ToUpper()
+                : "U";
+
+                int commentsCount = post.Comments?.Count ?? 0;
+                int reactionsCount = post.Reactions?.Count ?? 0;
+
+                <div class="card mb-4 shadow-sm">
+
+                    <!-- HEADER -->
+                    <div class="card-header bg-white d-flex align-items-center gap-2">
+
+                        <a asp-controller="Profiles"
+                           asp-action="Index"
+                           asp-route-userId="@post.UserId"
+                           class="text-decoration-none">
+
+                            @if (!string.IsNullOrEmpty(profileImg))
+                            {
+                                <img src="@profileImg"
+                                     class="rounded-circle"
+                                     style="width:40px;height:40px;object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-secondary text-white d-flex
+                                                    align-items-center justify-content-center"
+                                     style="width:40px;height:40px;">
+                                    @initial
+                                </div>
+                            }
+                        </a>
+
+                        <div>
+                            <a asp-controller="Profiles"
+                               asp-action="Index"
+                               asp-route-userId="@post.UserId"
+                               class="fw-bold text-dark text-decoration-none">
+                                @fullName
+                            </a>
+                            <div class="text-muted" style="font-size:0.8rem;">
+                                @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- MEDIA -->
+                    @if (!string.IsNullOrEmpty(post.ImageUrl))
+                    {
+                        <img src="@post.ImageUrl" class="w-100" />
+                    }
+                    else if (!string.IsNullOrEmpty(post.VideoUrl))
+                    {
+                        <video class="w-100" controls>
                             <source src="@post.VideoUrl" />
                         </video>
                     }
@@ -35,108 +232,53 @@
 
                         @if (!string.IsNullOrEmpty(post.Content))
                         {
-                            <p class="mb-2">
-                                <strong>@post.User.UserName</strong>
-                                @post.Content
-                            </p>
+                            <div class="d-flex flex-wrap gap-1 mb-2">
+                                <span class="fw-bold">@fullName</span>
+                                <span>@post.Content</span>
+                            </div>
                         }
+                        <div class="card-footer bg-white border-top-0 pt-0">
 
-                        <p class="text-muted mb-2" style="font-size: 0.9rem;">
-                            ❤️ @reactionsCount likes · 💬 @commentsCount comments
-                        </p>
+                            <div class="d-flex align-items-center text-muted mb-2" style="font-size: 0.9rem;">
+                                <div class="me-3">
+                                    <span>❤️ @(post.Reactions?.Count ?? 0) Likes</span>
+                                </div>
+                                <div>
+                                    <span>💬 @(post.Comments?.Count ?? 0) Comments</span>
+                                </div>
+                            </div>
+
+                            <hr class="my-1">
+
+                            <div class="d-flex gap-2 mt-2">
+                                <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
+                                    ❤️ Like
+                                </a>
+
+                                <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
+                                    💬 Comment
+                                </a>
+
+                                <button class="btn btn-sm btn-light flex-grow-1 text-muted">
+                                    ✈️ Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                         <a asp-controller="Posts"
                            asp-action="Show"
                            asp-route-id="@post.Id"
                            class="text-muted text-decoration-none">
-                            Vezi comentariile
+                            View comments
                         </a>
 
                     </div>
-
-                </div>
+                
             }
 
         </div>
-
     </div>
-</div>
-
-
-@* 
-<br />
-<h2 class="text-center">Afisare postari</h2>
-<br />
-
-@if (ViewBag.Message != null)
-{
-    <h2 class="p-3 rounded-3 text-center mb-5 alert @ViewBag.Alert">@ViewBag.Message</h2>
-}
-<br />
-
-@* Buton New – doar pentru user logat *@
-@* @if (ViewBag.IsLogged == true)
-{
-    <div class="text-center mb-4">
-        <a class="btn btn-success"
-           asp-controller="Posts"
-           asp-action="New">
-            Adauga postare
-        </a>
-    </div>
-} *@
-
-
-@* Lista postarilor
-@foreach (var post in ViewBag.Posts)
-{
-    var commentsCount = post.Comments.Count;
-    var reactionsCount = post.Reactions.Count;
-
-    <a asp-controller="Posts"
-       asp-action="Show"
-       asp-route-id="@post.Id"
-       style="text-decoration:none; color:inherit;">
-
-    <div class="card mb-4">
-        <div class="card-body">
-
-            <h5 class="card-title">@post.User.UserName</h5>
-            <h6 class="card-subtitle mb-2 text-muted">
-                @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
-            </h6>
-
-            <hr />
-
-           
-
-            @if (post.ImageUrl != null && post.ImageUrl != "")
-            {
-                <img src="@post.ImageUrl" class="img-fluid rounded mb-2" />
-            }
-
-            @if (post.VideoUrl != null && post.VideoUrl != "")
-            {
-                <video class="w-100 rounded mb-2" controls>
-                    <source src="@post.VideoUrl" />
-                </video>
-            }
-                @if (post.Content != null && post.Content != "")
-                {
-                    <p class="card-text" style="white-space: pre-wrap;">
-                        @post.Content
-                    </p>
-                }
-
-            <hr />
-
-            <p class="text-muted">
-                ❤️ @reactionsCount reactii
-                💬 @commentsCount comentarii |
-                
-            </p>
-                
-      
-    </div>
-    </a>
-} *@
+</div> *@

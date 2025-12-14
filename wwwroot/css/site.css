@@ -36,3 +36,180 @@ body {
     object-fit: cover;
     background-color: #f8f9fa;
 }
+/* Instagram-like Post UI */
+.insta-post {
+    border: 1px solid #dbdbdb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.insta-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #efefef;
+}
+
+.insta-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+    flex: 0 0 auto;
+}
+
+.insta-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #eee;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #666;
+    flex: 0 0 auto;
+}
+
+.insta-username {
+    font-weight: 700;
+    margin: 0;
+}
+
+.insta-sub {
+    font-size: 0.85rem;
+    color: #8e8e8e;
+}
+
+.insta-media {
+    width: 100%;
+    max-height: 680px;
+    object-fit: cover;
+    background: #fafafa;
+    display: block;
+}
+
+.ig-actions {
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    padding-top: 8px;
+}
+
+/* IG actions row (Like/Comment/Share) */
+.ig-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 8px;
+}
+
+.ig-icon-btn {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #111;
+    display: inline-flex;
+    align-items: center;
+}
+
+    .ig-icon-btn:hover {
+        opacity: .6;
+    }
+
+.ig-icon-link {
+    text-decoration: none;
+}
+
+.ig-likes {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: .95rem;
+    color: #111;
+}
+
+.ig-view-comments {
+    display: block;
+    margin-top: 4px;
+    color: #8e8e8e;
+    text-decoration: none;
+    font-size: .9rem;
+}
+
+    .ig-view-comments:hover {
+        text-decoration: underline;
+    }
+
+
+.ig-count {
+    font-size: .78rem;
+    color: #666;
+}
+
+
+.insta-meta {
+    padding: 0 14px 12px 14px;
+}
+
+.insta-caption {
+    padding: 0 14px 8px 14px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.insta-caption-user {
+    font-weight: 600;
+    color: #262626;
+}
+
+.insta-caption-text {
+    color: #262626;
+    word-break: break-word;
+}
+
+
+.insta-counts {
+    color: #8e8e8e;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.insta-divider {
+    border-top: 1px solid #efefef;
+    margin: 0;
+}
+
+.insta-comments {
+    padding: 12px 14px;
+}
+
+.comment-item {
+    padding: 8px 0;
+}
+
+.comment-user {
+    font-weight: 700;
+    margin-right: 6px;
+}
+
+.comment-time {
+    color: #8e8e8e;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+.insta-input {
+    border-top: 1px solid #efefef;
+    padding: 10px 14px;
+    background: #fff;
+}
+
