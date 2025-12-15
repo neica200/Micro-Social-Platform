@@ -10,11 +10,11 @@ namespace Micro_social_app.Models
 
         [Required]
         public int GroupId { get; set; }
-        public Group Group { get; set; }
+        public Group? Group { get; set; }
 
         [Required]
         public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         
         [Required]

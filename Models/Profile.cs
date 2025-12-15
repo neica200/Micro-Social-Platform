@@ -13,7 +13,7 @@ namespace Micro_social_app.Models
         [Required]
         [ForeignKey(nameof(User))]
         public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         [Required]
         [MaxLength(100)]

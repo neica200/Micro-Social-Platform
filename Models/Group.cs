@@ -10,14 +10,14 @@ namespace Micro_social_app.Models
 
         [Required]
         public string ModeratorId { get; set; }
-        public ApplicationUser Moderator { get; set; }
+        public ApplicationUser? Moderator { get; set; }
 
         [Required]
         [MaxLength(200)]
         public string Name { get; set; }
 
-        [Required]
-        public string Description { get; set; }
+        //[Required]
+        public string? Description { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

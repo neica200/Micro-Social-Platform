@@ -148,76 +148,122 @@
 
                 <hr class="insta-divider" />
 
+                <hr class="insta-divider" />
+
                 <!-- COMMENTS -->
                 <div class="insta-comments" id="comments">
+
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="ig-comments-title">
+                            Comments
+                            <span class="ig-comments-count">@commentsCount</span>
+                        </div>
+
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <div class="insta-sub">Login to comment</div>
+                        }
+                    </div>
+
                     @if (commentsCount == 0)
                     {
-                        <p class="text-muted mb-0">No comments.</p>
+                        <div class="text-muted mb-2">No comments yet. Be the first</div>
                     }
                     else
                     {
-                        @foreach (var comment in Model.Comments)
+                        @foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
                         {
-                            <div class="comment-item">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <span class="comment-user">@comment.User?.UserName</span>
-                                        <span>@comment.Content</span>
+                            // fallback avatar pentru user-ul din comment
+                            var cName = comment.User?.Profile?.FullName ?? comment.User?.UserName ?? "User";
+                            var cInitial = !string.IsNullOrEmpty(cName) ? cName.Substring(0, 1).ToUpper() : "?";
+                            var cImg = comment.User?.Profile?.ProfileImageUrl ?? "";
 
-                                        <div class="comment-time">
-                                            @comment.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
-                                        </div>
+                            if (!string.IsNullOrEmpty(cImg) && !cImg.StartsWith("/") && !cImg.StartsWith("http"))
+                            {
+                                cImg = "/" + cImg;
+                            }
+
+                            <div class="ig-comment-row">
+                                <div class="ig-comment-avatar">
+                                    @if (!string.IsNullOrEmpty(cImg))
+                                    {
+                                        <img src="@cImg" alt="avatar" />
+                                    }
+                                    else
+                                    {
+                                        <div class="ig-avatar-fallback">@cInitial</div>
+                                    }
+                                </div>
+
+                                <div class="ig-comment-main">
+                                    <div class="ig-comment-line">
+                                        <span class="ig-comment-user">@cName</span>
+                                        <span class="ig-comment-text">@comment.Content</span>
                                     </div>
 
-                                    @if (ViewBag.IsAdmin == true || ViewBag.CurrUser == comment.UserId)
-                                    {
+                                    <div class="ig-comment-meta">
+                                        @comment.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                                    </div>
+                                </div>
+
+                                @if (ViewBag.IsAdmin == true || ViewBag.CurrUser == comment.UserId)
+                                {
+                                    <div class="ig-comment-actions">
+                                        @* Edit *@
+                                        <a class="ig-icon-btn"
+                                           asp-controller="Comments"
+                                           asp-action="Edit"
+                                           asp-route-id="@comment.Id"
+                                           title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+
+                                        @* Delete *@
                                         <form method="post"
                                               asp-controller="Comments"
                                               asp-action="Delete"
-                                              asp-route-id="@comment.Id">
+                                              asp-route-id="@comment.Id"
+                                              class="d-inline">
                                             @Html.AntiForgeryToken()
-                                            <button class="btn btn-sm btn-outline-danger" type="submit">
-                                                Sterge
+                                            <button class="ig-icon-btn ig-danger" type="submit" title="Delete">
+                                                <i class="bi bi-trash"></i>
                                             </button>
                                         </form>
-                                    }
-                                </div>
+                                    </div>
+                                }
                             </div>
                         }
                     }
                 </div>
 
                 <!-- ADD COMMENT -->
-                <div class="insta-input">
+                <div class="ig-add-comment">
                     @if (ViewBag.IsLogged == true)
                     {
                         <form method="post"
                               asp-controller="Comments"
-                              asp-action="New">
+                              asp-action="New"
+                              class="ig-add-comment-form">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="PostId" value="@Model.Id" />
 
-                            <div class="d-flex gap-2">
-                                <input name="Content"
-                                       class="form-control"
-                                       placeholder="Add a comment..." />
+                            <input name="Content"
+                                   class="form-control ig-add-input"
+                                   placeholder="Add a comment..."
+                                   autocomplete="off" />
 
-                                <button class="btn btn-primary" type="submit">
-                                    Post
-                                </button>
-                            </div>
+                            <button class="btn btn-primary ig-add-btn" type="submit">
+                                Post
+                            </button>
                         </form>
                     }
                     else
                     {
-                        <div class="text-muted text-center">
+                        <div class="text-muted text-center py-2">
                             Trebuie sa fii logat pentru a adauga comentarii.
                         </div>
                     }
                 </div>
-
-            </div>
-
         </div>
     </div>
 </div>

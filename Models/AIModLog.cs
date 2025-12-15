@@ -17,7 +17,7 @@ namespace Micro_social_app.Models
 
         [Required]
         public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
 
         [Required]
         public string OriginalText { get; set; }
@@ -27,7 +27,7 @@ namespace Micro_social_app.Models
         public string Decision { get; set; }  // "approved", "rejected"
 
         [MaxLength(500)]
-        public string Reason { get; set; } 
+        public string? Reason { get; set; } 
 
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -81,6 +81,13 @@
 
     <div class="container">
         <main role="main" class="pb-3">
+            @if (TempData["message"] != null)
+            {
+                <div class="alert @(TempData["messageType"] ?? "alert-info")">
+                    @TempData["message"]
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>

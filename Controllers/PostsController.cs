@@ -89,11 +89,11 @@ namespace Micro_social_app.Controllers
             post.UserId = _userManager.GetUserId(User);
             post.AIStatus = "Approved";
 
-            //  ca să nu mai crape DB (NOT NULL) de scos dupa
-            if (post.ImageUrl == null) post.ImageUrl = "";
-            if (post.VideoUrl == null) post.VideoUrl = "";
-            if (post.ErrorMessage == null) post.ErrorMessage = "";
-            if (post.Content == null) post.Content = "";
+            ////  ca să nu mai crape DB (NOT NULL) de scos dupa
+            //if (post.ImageUrl == null) post.ImageUrl = "";
+            //if (post.VideoUrl == null) post.VideoUrl = "";
+            //if (post.ErrorMessage == null) post.ErrorMessage = "";
+            //if (post.Content == null) post.Content = "";
 
             //  scoatem din ModelState ce nu vine din form / nu vrem validat
             ModelState.Remove("UserId");
@@ -106,7 +106,7 @@ namespace Micro_social_app.Controllers
             ModelState.Remove("ImageFile");
             ModelState.Remove("VideoFile");
 
-            bool hasText = post.Content.Trim() != "";
+            bool hasText = post.Content != null;
             bool hasImg = ImageFile != null && ImageFile.Length > 0;
             bool hasVid = VideoFile != null && VideoFile.Length > 0;
 
@@ -182,10 +182,10 @@ namespace Micro_social_app.Controllers
                 return RedirectToAction("Index");
             }
 
-            // daca DB are NOT NULL, nu trimitem null
-            if (requestPost.Content == null) requestPost.Content = "";
-            if (post.ImageUrl == null) post.ImageUrl = "";
-            if (post.VideoUrl == null) post.VideoUrl = "";
+            //// daca DB are NOT NULL, nu trimitem null
+            //if (requestPost.Content == null) requestPost.Content = "";
+            //if (post.ImageUrl == null) post.ImageUrl = "";
+            //if (post.VideoUrl == null) post.VideoUrl = "";
 
             // scoatem campurile care nu vin din form
             ModelState.Remove("UserId");

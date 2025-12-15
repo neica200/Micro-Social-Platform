@@ -212,4 +212,124 @@ body {
     padding: 10px 14px;
     background: #fff;
 }
+/* Comments title */
+.ig-comments-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.ig-comments-count {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-left: .35rem;
+}
+
+/* Comment row */
+.ig-comment-row {
+    display: flex;
+    gap: .75rem;
+    padding: .6rem 0;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+    .ig-comment-row:last-child {
+        border-bottom: none;
+    }
+
+.ig-comment-avatar {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+}
+
+    .ig-comment-avatar img {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+    }
+
+.ig-avatar-fallback {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #f1f3f5;
+    font-weight: 700;
+    color: #495057;
+}
+
+.ig-comment-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.ig-comment-line {
+    line-height: 1.25;
+}
+
+.ig-comment-user {
+    font-weight: 700;
+    margin-right: .35rem;
+}
+
+.ig-comment-text {
+    color: #212529;
+    word-wrap: break-word;
+}
+
+.ig-comment-meta {
+    margin-top: .2rem;
+    font-size: .8rem;
+    color: #6c757d;
+}
+
+/* Right actions */
+.ig-comment-actions {
+    display: flex;
+    gap: .25rem;
+    align-items: start;
+}
+
+/* Add comment bar */
+.ig-add-comment {
+    padding: .6rem .9rem .9rem .9rem;
+}
+
+.ig-add-comment-form {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+.ig-add-input {
+    border-radius: 999px;
+}
+
+.ig-add-btn {
+    border-radius: 999px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Icon buttons (reuse your style if you already have) */
+.ig-icon-btn {
+    border: none;
+    background: transparent;
+    padding: .25rem .35rem;
+    border-radius: .5rem;
+    line-height: 1;
+}
+
+    .ig-icon-btn:hover {
+        background: rgba(0,0,0,.06);
+    }
+
+.ig-danger {
+    color: #dc3545;
+}
+
 

@@ -1,0 +1,91 @@
+﻿@model Micro_social_app.Models.Comment
+
+@{
+    ViewData["Title"] = "Edit comment";
+
+    string initial = "?";
+    if (Model.User != null && !string.IsNullOrEmpty(Model.User.UserName))
+    {
+        initial = Model.User.UserName.Substring(0, 1).ToUpper();
+    }
+
+    string fullName = Model.User?.Profile?.FullName ?? Model.User?.UserName ?? "User";
+
+    string profileImg = Model.User?.Profile?.ProfileImageUrl ?? "";
+
+    if (!string.IsNullOrEmpty(profileImg) &&
+        !profileImg.StartsWith("/") &&
+        !profileImg.StartsWith("http"))
+    {
+        profileImg = "/" + profileImg;
+    }
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+
+            <div class="insta-post shadow-sm">
+
+                <!-- HEADER -->
+                <div class="insta-header">
+                    <div class="d-flex align-items-center gap-2">
+                        @if (!string.IsNullOrEmpty(profileImg))
+                        {
+                            <img src="@profileImg" class="insta-avatar" alt="avatar" />
+                        }
+                        else
+                        {
+                            <div class="insta-avatar-fallback">@initial</div>
+                        }
+
+                        <div>
+                            <div class="insta-username">@fullName</div>
+                            <div class="insta-sub">Edit comment</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="insta-divider" />
+
+                <!-- FORM -->
+                <div class="insta-meta">
+                    <form method="post"
+                          asp-controller="Comments"
+                          asp-action="Edit"
+                          asp-route-id="@Model.Id">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Comment</label>
+                            <textarea name="Content"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Write something...">@Model.Content</textarea>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                Save
+                            </button>
+
+                            <a class="btn btn-outline-secondary w-100"
+                               asp-controller="Posts"
+                               asp-action="Show"
+                               asp-route-id="@Model.PostId">
+                                Back to post
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <hr class="insta-divider" />
+
+              
+            </div>
+
+        </div>
+    </div>
+</div>
