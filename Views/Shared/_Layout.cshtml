@@ -101,6 +101,127 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+
+    <!--SCRIPT PT AJAX-->
+    <script>
+        async function toggleLike(postId, btn) {
+            const icon = btn.querySelector('i');
+            const likesSpan = document.getElementById(`likes-${postId}`);
+
+            // starea inițială
+            const wasLiked = btn.classList.contains('ig-liked');
+            let oldLikes = null;
+
+            if (likesSpan) {
+                oldLikes = parseInt(likesSpan.textContent, 10);
+                if (isNaN(oldLikes)) oldLikes = null;
+            }
+
+            // =========================
+            // 1) OPTIMISTIC UI (INSTANT)
+            // =========================
+            if (wasLiked) {
+                // unlike
+                btn.classList.remove('ig-liked');
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+
+                if (likesSpan && oldLikes !== null) {
+                    likesSpan.textContent = Math.max(0, oldLikes - 1);
+                }
+            } else {
+                // like
+                btn.classList.add('ig-liked');
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+
+                if (likesSpan && oldLikes !== null) {
+                    likesSpan.textContent = oldLikes + 1;
+                }
+            }
+
+            // =========================
+            // 2) REQUEST LA SERVER
+            // =========================
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            const token = tokenInput ? tokenInput.value : '';
+
+            const formData = new URLSearchParams();
+            formData.append('postId', postId);
+
+            try {
+                const response = await fetch('/Reactions/ToggleLikeAjax', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'RequestVerificationToken': token
+                    },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Request failed: ' + response.status);
+                }
+
+                const data = await response.json();
+
+                // =========================
+                // 3) SYNC CU SERVER (FINAL)
+                // =========================
+                // icon final (în caz că serverul decide altceva)
+                if (data.liked) {
+                    btn.classList.add('ig-liked');
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                } else {
+                    btn.classList.remove('ig-liked');
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
+
+                // count final real din DB
+                if (likesSpan) {
+                    likesSpan.textContent = data.likes;
+                }
+
+            } catch (err) {
+                // =========================
+                // 4) ROLLBACK DACA ESUEAZA
+                // =========================
+                if (wasLiked) {
+                    // revenim la liked
+                    btn.classList.add('ig-liked');
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
+                } else {
+                    // revenim la unliked
+                    btn.classList.remove('ig-liked');
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
+
+                if (likesSpan && oldLikes !== null) {
+                    likesSpan.textContent = oldLikes;
+                }
+
+                console.error('Like failed:', err);
+            }
+        }
+
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.js-like-btn');
+            if (!btn) return;
+
+            const postId = btn.getAttribute('data-postid');
+            if (!postId) return;
+
+            toggleLike(postId, btn);
+        });
+    </script>
+
+    }
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
