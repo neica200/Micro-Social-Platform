@@ -15,80 +15,138 @@
 
     <!-- NAVBAR CUSTOM -->
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom shadow-sm">
             <div class="container-fluid">
 
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">MicroSocial</a>
+                <!-- BRAND -->
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
+                   asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-chat-dots-fill"></i>
+                    MicroSocial
+                </a>
 
+                <!-- TOGGLER -->
                 <button class="navbar-toggler" type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target="#navbarNav"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation">
+                        data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarNav">
 
-                    <!-- SEARCH BAR -->
-                    <form class="d-flex mx-auto position-relative" method="get" asp-controller="Search" asp-action="Users" style="width: 420px;">
-                        <input id="liveSearchInput"
-                               class="form-control me-2"
-                               type="search"
-                               name="q"
-                               placeholder="Search users..."
-                               autocomplete="off" />
+                    <!-- SEARCH -->
+                        <form class="d-flex mx-auto position-relative"
+                              method="get"
+                              asp-controller="Search"
+                              asp-action="Users"
+                              style="width: 420px;">
 
-                        <button class="btn btn-outline-light" type="submit">Search</button>
+                            <input id="liveSearchInput"
+                                   class="form-control rounded-pill ps-4"
+                                   type="search"
+                                   name="q"
+                                   placeholder="     Search users..."
+                                   autocomplete="off" />
 
-                        <div id="liveSearchResults"
-                             class="list-group position-absolute w-100"
-                             style="top: 100%; left: 0; z-index: 9999; display: none;">
-                        </div>
-                    </form>
+                            <i class="bi bi-search position-absolute text-muted"
+                               style="left: 15px; top: 50%; transform: translateY(-50%);"></i>
 
+                            <div id="liveSearchResults"
+                                 class="list-group position-absolute w-100 mt-2"
+                                 style="top: 100%; z-index: 9999; display: none;">
+                            </div>
+                        </form>
+                    
 
-                    <!-- RIGHT SIDE MENU -->
-                    <ul class="navbar-nav ms-auto">
+                    <!-- RIGHT MENU -->
+                    <ul class="navbar-nav ms-auto align-items-center gap-2">
 
-                        <!-- Notifications (only if logged in) -->
                         @if (User.Identity.IsAuthenticated)
                         {
+                            <!-- Notifications -->
                             <li class="nav-item">
-                                <a class="nav-link text-warning" asp-controller="Notifications" asp-action="Index">
-                                    🔔 Notifications
+                                <a class="nav-link position-relative"
+                                   asp-controller="Notifications"
+                                   asp-action="Index"
+                                   title="Notifications">
+                                    <i class="bi bi-bell fs-5"></i>
                                 </a>
                             </li>
-                        }
 
-                        <!-- User authenticated -->
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Profiles" asp-action="Index">My Profile</a>
-                            </li>
+                            <!-- Profile dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                                   href="#"
+                                   role="button"
+                                   data-bs-toggle="dropdown">
 
-                            <li class="nav-item">
-                                <form asp-area="Identity" asp-page="/Account/Logout" method="post">
-                                    <button class="btn nav-link text-danger">Logout</button>
-                                </form>
+                                    <img src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                                         class="rounded-circle"
+                                         style="width:32px;height:32px;object-fit:cover;" />
+
+                                    <span class="d-none d-lg-inline">
+                                        @User.Identity.Name
+                                    </span>
+                                </a>
+
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Profiles"
+                                           asp-action="Index">
+                                            <i class="bi bi-person me-2"></i>
+                                            My Profile
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item"
+                                           asp-controller="Posts"
+                                           asp-action="New">
+                                            <i class="bi bi-plus-square me-2"></i>
+                                            New Post
+                                        </a>
+                                    </li>
+
+                                    <li><hr class="dropdown-divider" /></li>
+
+                                    <li>
+                                        <form asp-area="Identity"
+                                              asp-page="/Account/Logout"
+                                              method="post">
+                                            <button class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i>
+                                                Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </li>
                         }
                         else
                         {
-                            <!-- Guest (not logged in) -->
+                            <!-- GUEST -->
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                                <a class="btn btn-outline-light rounded-pill px-3"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Login">
+                                    Login
+                                </a>
                             </li>
+
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                                <a class="btn btn-light rounded-pill px-3 fw-semibold"
+                                   asp-area="Identity"
+                                   asp-page="/Account/Register">
+                                    Register
+                                </a>
                             </li>
                         }
                     </ul>
-
                 </div>
             </div>
         </nav>
+
     </header>
 
     <div class="container">
