@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Micro_social_app.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     public class ProfilesController : Controller
     {
         private readonly AppDbContext _context;
@@ -23,7 +23,7 @@ namespace Micro_social_app.Controllers
             _userManager = userManager;
             _supabaseClient = supabaseClient;
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> Index(string? id)
         {
@@ -32,7 +32,9 @@ namespace Micro_social_app.Controllers
 
             if (string.IsNullOrEmpty(id))
             {
-                if (currentUser == null) return RedirectToAction("Login", "Account", new { area = "Identity" });
+                if (currentUser == null)
+                    return RedirectToAction("Login", "Account", new { area = "Identity" });
+
                 targetUserId = currentUser.Id;
             }
             else
@@ -81,6 +83,7 @@ namespace Micro_social_app.Controllers
         }
 
         // GET: Profiles/Edit
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
@@ -100,6 +103,8 @@ namespace Micro_social_app.Controllers
         }
 
         // POST: Profiles/Edit
+        [HttpPost]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Profile profileForm)
