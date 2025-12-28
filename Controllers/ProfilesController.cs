@@ -50,26 +50,32 @@ namespace Micro_social_app.Controllers
                 return NotFound("Profil inexistent.");
             }
 
-            var userPosts = await _context.Posts
-                .Where(p => p.UserId == targetUserId)
-                .Include(p => p.User)       
-                .Include(p => p.Comments)    
-                .Include(p => p.Reactions)   
-                .OrderByDescending(p => p.CreatedAt)
-                .ToListAsync();
+            //E profilul meu?
+            var isMe = (currentUser != null && currentUser.Id == targetUserId);
+            ViewBag.IsMe = isMe;
 
-            ViewBag.Posts = userPosts;
 
-            ViewBag.Posts = userPosts;
+            var canSeePosts = isMe || !profile.IsPrivate;
+            ViewBag.CanSeePosts = canSeePosts;
 
-            if (currentUser != null)
+            if (canSeePosts)
             {
-                ViewBag.IsMe = (currentUser.Id == targetUserId);
+                var userPosts = await _context.Posts
+                    .Where(p => p.UserId == targetUserId)
+                    .Include(p => p.User)
+                    .Include(p => p.Comments)
+                    .Include(p => p.Reactions)
+                    .OrderByDescending(p => p.CreatedAt)
+                    .ToListAsync();
+
+                ViewBag.Posts = userPosts;
             }
             else
             {
-                ViewBag.IsMe = false;
+               
+                ViewBag.Posts = new List<Post>();
             }
+
 
             return View(profile);
         }

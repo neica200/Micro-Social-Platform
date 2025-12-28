@@ -33,7 +33,9 @@
             </div>
 
             <div class="d-flex mb-3">
-                <div class="me-4"><strong>@((ViewBag.Posts as IEnumerable<dynamic>)?.Count() ?? 0)</strong> postări</div>
+                <div class="me-4">
+                    <strong>@(ViewBag.CanSeePosts == true ? ((ViewBag.Posts as IEnumerable<dynamic>)?.Count() ?? 0) : 0)</strong> posts
+                </div>
                 <div class="me-4"><strong>0</strong> followers</div>
                 <div class="me-4"><strong>0</strong> following</div>
             </div>
@@ -42,121 +44,130 @@
                 <p class="mb-0 text-break" style="white-space: pre-wrap;">@Model.Description</p>
                 @if (Model.IsPrivate)
                 {
-                    <small class="text-muted">🔒 Cont privat</small>
+                   //
                 }
             </div>
         </div>
     </div>
 
-    <ul class="nav nav-tabs justify-content-center mb-4 border-top" id="profileTabs" role="tablist">
-        <li class="nav-item">
-            <button class="nav-link active border-0 text-dark fw-bold" id="grid-tab" data-bs-toggle="tab" data-bs-target="#grid-content" type="button">
-                🖼️ POSTS
-            </button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link border-0 text-dark fw-bold" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed-content" type="button">
-                📝 LIST
-            </button>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="profileTabsContent">
-
-        <div class="tab-pane fade show active" id="grid-content">
-            <div class="row g-4">
-                @if (ViewBag.Posts != null)
-                {
-                    @foreach (var post in ViewBag.Posts)
-                    {
-                       
-                        @if (!string.IsNullOrEmpty(post.ImageUrl))
-                        {
-                            <div class="col-4">
-                                <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="text-decoration-none">
-                                    <div class="ratio ratio-1x1 bg-light border position-relative">
-                                        <img src="@post.ImageUrl" class="img-fluid" style="object-fit: cover;" />
-                                    </div>
-                                </a>
-                            </div>
-                        }
-                    }
-                }
-            </div>
+    @if (ViewBag.CanSeePosts != true)
+    {
+        <div class="alert alert-info text-center">
+            🔒 This profile is private.
         </div>
+    }
+    else
+    {
+        <ul class="nav nav-tabs justify-content-center mb-4 border-top" id="profileTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active border-0 text-dark fw-bold" id="grid-tab" data-bs-toggle="tab" data-bs-target="#grid-content" type="button">
+                    🖼️ POSTS
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link border-0 text-dark fw-bold" id="feed-tab" data-bs-toggle="tab" data-bs-target="#feed-content" type="button">
+                    📝 LIST
+                </button>
+            </li>
+        </ul>
 
-        <div class="tab-pane fade" id="feed-content">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
+        <div class="tab-content" id="profileTabsContent">
+
+            <div class="tab-pane fade show active" id="grid-content">
+                <div class="row g-4">
                     @if (ViewBag.Posts != null)
                     {
                         @foreach (var post in ViewBag.Posts)
                         {
-                            <div class="card mb-4 shadow-sm">
-                                <div class="card-header bg-white d-flex align-items-center border-0 pb-0 pt-3">
-                                    <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : Model.ProfileImageUrl)"
-                                         class="rounded-circle me-2 border"
-                                         style="width: 40px; height: 40px; object-fit: cover;">
 
-                                    <div class="d-flex flex-column">
-                                        <span class="fw-bold text-dark">@Model.FullName</span>
-                                        <small class="text-muted" style="font-size: 0.8rem;">
-                                            @post.CreatedAt.ToString("dd MMM yyyy HH:mm")
-                                        </small>
-                                    </div>
-                                </div>
-
-                                <div class="card-body">
-                                    <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="text-decoration-none text-dark">
-                                        @if (!string.IsNullOrEmpty(post.Content))
-                                        {
-                                            <p class="card-text mb-2">@post.Content</p>
-                                        }
-                                        @if (!string.IsNullOrEmpty(post.ImageUrl))
-                                        {
-                                            <img src="@post.ImageUrl" class="img-fluid rounded border w-100 mb-2" />
-                                        }
-                                        @if (!string.IsNullOrEmpty(post.VideoUrl))
-                                        {
-                                            <video controls class="img-fluid rounded border w-100 mb-2">
-                                                <source src="@post.VideoUrl" type="video/mp4">
-                                            </video>
-                                        }
+                            @if (!string.IsNullOrEmpty(post.ImageUrl))
+                            {
+                                <div class="col-4">
+                                    <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="text-decoration-none">
+                                        <div class="ratio ratio-1x1 bg-light border position-relative">
+                                            <img src="@post.ImageUrl" class="img-fluid" style="object-fit: cover;" />
+                                        </div>
                                     </a>
                                 </div>
-
-                                <div class="card-footer bg-white border-top-0 pt-0">
-
-                                    <div class="d-flex align-items-center text-muted mb-2" style="font-size: 0.9rem;">
-                                        <div class="me-3">
-                                            <span>❤️ @(post.Reactions?.Count ?? 0) Likes</span>
-                                        </div>
-                                        <div>
-                                            <span>💬 @(post.Comments?.Count ?? 0) Comments</span>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-1">
-
-                                    <div class="d-flex gap-2 mt-2">
-                                        <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
-                                            ❤️ Like
-                                        </a>
-
-                                        <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
-                                            💬 Comment
-                                        </a>
-
-                                        <button class="btn btn-sm btn-light flex-grow-1 text-muted">
-                                            ✈️ Distribuie
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            }
                         }
                     }
                 </div>
             </div>
+
+            <div class="tab-pane fade" id="feed-content">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        @if (ViewBag.Posts != null)
+                        {
+                            @foreach (var post in ViewBag.Posts)
+                            {
+                                <div class="card mb-4 shadow-sm">
+                                    <div class="card-header bg-white d-flex align-items-center border-0 pb-0 pt-3">
+                                        <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : Model.ProfileImageUrl)"
+                                             class="rounded-circle me-2 border"
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+
+                                        <div class="d-flex flex-column">
+                                            <span class="fw-bold text-dark">@Model.FullName</span>
+                                            <small class="text-muted" style="font-size: 0.8rem;">
+                                                @post.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="text-decoration-none text-dark">
+                                            @if (!string.IsNullOrEmpty(post.Content))
+                                            {
+                                                <p class="card-text mb-2">@post.Content</p>
+                                            }
+                                            @if (!string.IsNullOrEmpty(post.ImageUrl))
+                                            {
+                                                <img src="@post.ImageUrl" class="img-fluid rounded border w-100 mb-2" />
+                                            }
+                                            @if (!string.IsNullOrEmpty(post.VideoUrl))
+                                            {
+                                                <video controls class="img-fluid rounded border w-100 mb-2">
+                                                    <source src="@post.VideoUrl" type="video/mp4">
+                                                </video>
+                                            }
+                                        </a>
+                                    </div>
+
+                                    <div class="card-footer bg-white border-top-0 pt-0">
+
+                                        <div class="d-flex align-items-center text-muted mb-2" style="font-size: 0.9rem;">
+                                            <div class="me-3">
+                                                <span>❤️ @(post.Reactions?.Count ?? 0) Likes</span>
+                                            </div>
+                                            <div>
+                                                <span>💬 @(post.Comments?.Count ?? 0) Comments</span>
+                                            </div>
+                                        </div>
+
+                                        <hr class="my-1">
+
+                                        <div class="d-flex gap-2 mt-2">
+                                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
+                                                ❤️ Like
+                                            </a>
+
+                                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
+                                                💬 Comment
+                                            </a>
+
+                                            <button class="btn btn-sm btn-light flex-grow-1 text-muted">
+                                                ✈️ Distribuie
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    }
 </div>

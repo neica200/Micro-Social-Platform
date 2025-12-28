@@ -31,10 +31,22 @@
                 <div class="collapse navbar-collapse" id="navbarNav">
 
                     <!-- SEARCH BAR -->
-                    <form class="d-flex mx-auto" method="get" asp-controller="Search" asp-action="Users">
-                        <input class="form-control me-2" type="search" name="q" placeholder="Search users..." />
+                    <form class="d-flex mx-auto position-relative" method="get" asp-controller="Search" asp-action="Users" style="width: 420px;">
+                        <input id="liveSearchInput"
+                               class="form-control me-2"
+                               type="search"
+                               name="q"
+                               placeholder="Search users..."
+                               autocomplete="off" />
+
                         <button class="btn btn-outline-light" type="submit">Search</button>
+
+                        <div id="liveSearchResults"
+                             class="list-group position-absolute w-100"
+                             style="top: 100%; left: 0; z-index: 9999; display: none;">
+                        </div>
                     </form>
+
 
                     <!-- RIGHT SIDE MENU -->
                     <ul class="navbar-nav ms-auto">
@@ -101,6 +113,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/live-search.js" asp-append-version="true"></script>
+
 
 
     <!--SCRIPT PT AJAX-->
@@ -220,7 +235,7 @@
         });
     </script>
 
-    }
+    
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
