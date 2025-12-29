@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Deleted groups";
+}
+
+<h2 class="mb-3">My deleted groups</h2>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert @ViewBag.Alert">@ViewBag.Message</div>
+}
+
+<a asp-action="Index" class="btn btn-secondary mb-3">Back to active groups</a>
+
+@if (ViewBag.Groups.Count == 0)
+{
+    <p>You have no deleted groups.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Deleted at</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var g in ViewBag.Groups)
+            {
+                <tr>
+                    <td>@g.Name</td>
+                    <td>@g.Description</td>
+                    <td>@(g.UpdatedAt ?? g.CreatedAt)</td>
+                    <td>
+                        <a asp-action="Show" asp-route-id="@g.Id"
+                           class="btn btn-sm btn-outline-info">
+                            Details
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

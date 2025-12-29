@@ -143,6 +143,9 @@ namespace Micro_social_app.Controllers
                 {
                     db.Comments.Remove(comm);
                     db.SaveChanges();
+                    TempData["message"] = "Comment deleted succesfully!";
+                    TempData["messageType"] = "alert-succes";
+
                     return RedirectToAction("Show", "Posts", new { id = comm.PostId });
                 }
                 else
@@ -155,5 +158,8 @@ namespace Micro_social_app.Controllers
         }
 
 
+
+
     }
+
 }

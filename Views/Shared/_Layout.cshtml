@@ -147,16 +147,29 @@
             </div>
         </nav>
 
+        <!--mesaje -->
+        <div class="container mt-3">
+            <div id="flash"
+                 class="alert d-none alert-dismissible fade show shadow-sm"
+                 role="alert">
+                <span id="flash-text"></span>
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+        </div>
     </header>
 
     <div class="container">
         <main role="main" class="pb-3">
             @if (TempData["message"] != null)
             {
-                <div class="alert @(TempData["messageType"] ?? "alert-info")">
-                    @TempData["message"]
-                </div>
+                var t = TempData["messageType"]?.ToString() ?? "alert-info";
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        showFlash("@TempData["message"]", "@t");
+                    });
+                </script>
             }
+
 
             @RenderBody()
         </main>
@@ -178,11 +191,58 @@
 
     <!--SCRIPT PT AJAX-->
     <script>
+        let flashTimer = null;
+
+              function showFlash(message, type) {
+            const box = document.getElementById("flash");
+            const text = document.getElementById("flash-text");
+            if (!box || !text) return;
+
+            // curăț doar culorile vechi
+            box.classList.remove(
+                "d-none",
+                "alert-success",
+                "alert-danger",
+                "alert-info"
+            );
+
+            // 1️ dacă vine direct din TempData: "alert-success"
+            if (typeof type === "string" && type.startsWith("alert-")) {
+                box.classList.add(type);
+            }
+            // 2️ dacă vine "success" / "danger" din JS
+            else if (type === "success") {
+                box.classList.add("alert-success");
+            }
+            else if (type === "danger") {
+                box.classList.add("alert-danger");
+            }
+            else if (type === "warning") {
+                box.classList.add("alert-warning");
+            }
+            // 3️ fallback
+            else {
+                box.classList.add("alert-info");
+            }
+
+            text.textContent = message;
+
+            const closeBtn = box.querySelector(".btn-close");
+            if (closeBtn) {
+                closeBtn.onclick = () => box.classList.add("d-none");
+            }
+
+            box.classList.remove("d-none");
+
+            if (flashTimer) clearTimeout(flashTimer);
+            flashTimer = setTimeout(() => {
+                box.classList.add("d-none");
+            }, 3000);
+        }
         async function toggleLike(postId, btn) {
             const icon = btn.querySelector('i');
             const likesSpan = document.getElementById(`likes-${postId}`);
 
-            // starea inițială
             const wasLiked = btn.classList.contains('ig-liked');
             let oldLikes = null;
 
@@ -191,32 +251,26 @@
                 if (isNaN(oldLikes)) oldLikes = null;
             }
 
-            // =========================
-            // 1) OPTIMISTIC UI (INSTANT)
-            // =========================
+            // 1) Optimistic UI
             if (wasLiked) {
-                // unlike
                 btn.classList.remove('ig-liked');
-                icon.classList.remove('bi-heart-fill');
-                icon.classList.add('bi-heart');
-
-                if (likesSpan && oldLikes !== null) {
+                if (icon) {
+                    icon.classList.remove('bi-heart-fill');
+                    icon.classList.add('bi-heart');
+                }
+                if (likesSpan && oldLikes !== null)
                     likesSpan.textContent = Math.max(0, oldLikes - 1);
-                }
             } else {
-                // like
                 btn.classList.add('ig-liked');
-                icon.classList.remove('bi-heart');
-                icon.classList.add('bi-heart-fill');
-
-                if (likesSpan && oldLikes !== null) {
-                    likesSpan.textContent = oldLikes + 1;
+                if (icon) {
+                    icon.classList.remove('bi-heart');
+                    icon.classList.add('bi-heart-fill');
                 }
+                if (likesSpan && oldLikes !== null)
+                    likesSpan.textContent = oldLikes + 1;
             }
 
-            // =========================
-            // 2) REQUEST LA SERVER
-            // =========================
+            // 2) Request la server
             const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
             const token = tokenInput ? tokenInput.value : '';
 
@@ -233,45 +287,64 @@
                     body: formData.toString()
                 });
 
+                // cazul tău: redirect la Login
+                if (response.redirected && response.url.includes("Login")) {
+                    showFlash("You must be logged in to like.", "warning");
+                    throw new Error("Redirected to login");
+                }
+
+                if (response.status === 403) {
+                    showFlash("You don't have permission to like.", "danger");
+                    throw new Error("Forbidden");
+                }
+
                 if (!response.ok) {
+                    showFlash("Something went wrong. Please try again.", "danger");
                     throw new Error('Request failed: ' + response.status);
+                }
+
+                // dacă serverul întoarce HTML în loc de JSON
+                const contentType = response.headers.get("content-type") || "";
+                if (!contentType.includes("application/json")) {
+                    showFlash("You must be logged in to like.", "warning");
+                    throw new Error("Not JSON response");
                 }
 
                 const data = await response.json();
 
-                // =========================
-                // 3) SYNC CU SERVER (FINAL)
-                // =========================
-                // icon final (în caz că serverul decide altceva)
+                // 3) Sync cu serverul
                 if (data.liked) {
                     btn.classList.add('ig-liked');
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
+                    if (icon) {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                    }
                 } else {
                     btn.classList.remove('ig-liked');
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
+                    if (icon) {
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                    }
                 }
 
-                // count final real din DB
                 if (likesSpan) {
                     likesSpan.textContent = data.likes;
                 }
 
             } catch (err) {
-                // =========================
-                // 4) ROLLBACK DACA ESUEAZA
-                // =========================
+                // 4) Rollback
                 if (wasLiked) {
-                    // revenim la liked
                     btn.classList.add('ig-liked');
-                    icon.classList.remove('bi-heart');
-                    icon.classList.add('bi-heart-fill');
+                    if (icon) {
+                        icon.classList.remove('bi-heart');
+                        icon.classList.add('bi-heart-fill');
+                    }
                 } else {
-                    // revenim la unliked
                     btn.classList.remove('ig-liked');
-                    icon.classList.remove('bi-heart-fill');
-                    icon.classList.add('bi-heart');
+                    if (icon) {
+                        icon.classList.remove('bi-heart-fill');
+                        icon.classList.add('bi-heart');
+                    }
                 }
 
                 if (likesSpan && oldLikes !== null) {
@@ -292,6 +365,8 @@
             toggleLike(postId, btn);
         });
     </script>
+
+
 
     
     @await RenderSectionAsync("Scripts", required: false)

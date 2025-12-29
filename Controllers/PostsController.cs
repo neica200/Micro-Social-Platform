@@ -27,7 +27,7 @@ namespace Micro_social_app.Controllers
             _env = env;
         }
 
-        // Afisare postari (fara search)
+        // Afisare postari
   
         public IActionResult Index()
         {
