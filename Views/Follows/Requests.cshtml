@@ -1,0 +1,64 @@
+﻿@model IEnumerable<Micro_social_app.Models.FollowRequest>
+
+@{
+    ViewData["Title"] = "Follow Requests";
+}
+
+<div class="container mt-4" style="max-width: 700px;">
+    <h3 class="mb-3">Follow Requests</h3>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">No pending requests.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var r in Model)
+            {
+                var fullName = r.Sender?.Profile?.FullName ?? r.Sender?.UserName ?? "User";
+                var img = r.Sender?.Profile?.ProfileImageUrl;
+
+                <div class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <a asp-controller="Profiles" asp-action="Index" asp-route-id="@r.SenderId" class="text-decoration-none">
+                            @if (!string.IsNullOrEmpty(img))
+                            {
+                                <img src="@img" class="rounded-circle" style="width:44px;height:44px;object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                     style="width:44px;height:44px;">
+                                    @fullName.Substring(0, 1).ToUpper()
+                                </div>
+                            }
+                        </a>
+
+                        <div>
+                            <a asp-controller="Profiles" asp-action="Index" asp-route-id="@r.SenderId"
+                               class="fw-bold text-dark text-decoration-none">
+                                @fullName
+                            </a>
+                            <div class="text-muted" style="font-size:0.85rem;">wants to follow you</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <form asp-controller="Follows" asp-action="Accept" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="requestId" value="@r.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Accept</button>
+                        </form>
+
+                        <form asp-controller="Follows" asp-action="Reject" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="requestId" value="@r.Id" />
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Reject</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
