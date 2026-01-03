@@ -47,7 +47,7 @@
         var isApproved = (bool)(ViewBag.IsMemberApproved ?? false);
         var isMod = (bool)(ViewBag.IsModerator ?? false);
         var currUser = ViewBag.CurrUser as string;
-        var messages = ViewBag.Messages as List<Micro_social_app.Models.GroupMessage> ?? new();
+        var messages = ViewBag.Messages as IEnumerable<GroupMessage> ?? Enumerable.Empty<GroupMessage>();
     }
 
     <div class="mt-4">
@@ -55,7 +55,7 @@
 
         @if (isApproved || isMod)
         {
-            <form method="post" asp-controller="GroupMessages" asp-action="Create" class="mb-4">
+            <form method="post" asp-controller="GroupMessages" asp-action="New" class="mb-4">
                 <input type="hidden" name="groupId" value="@Model.Id" />
 
                 <div class="input-group">
@@ -123,10 +123,11 @@
                         }
                     </div>
                 }
+               
             </div>
         }
     </div>
-
+    <div class="text-muted">Messages count: @messages.Count()</div>
 
     <!-- JOIN / LEAVE / STATUS -->
     <div class="mb-4">

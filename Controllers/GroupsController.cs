@@ -138,6 +138,13 @@ namespace Micro_social_app.Controllers
                     .ToList();
             }
 
+            ViewBag.Messages = db.GroupMessages
+                .Where(m => m.GroupId == id && m.IsDeleted == false)
+                .Include(m => m.User)
+                .OrderByDescending(m => m.CreatedAt)
+                .ToList();
+
+
             return View(group);
         }
 

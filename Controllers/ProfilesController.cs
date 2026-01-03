@@ -28,6 +28,7 @@ namespace Micro_social_app.Controllers
         public async Task<IActionResult> Index(string? id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
+            ViewBag.CurrUser = currentUser?.Id;
             string targetUserId;
 
             if (string.IsNullOrEmpty(id))
