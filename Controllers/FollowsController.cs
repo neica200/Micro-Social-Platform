@@ -37,10 +37,10 @@ namespace Micro_social_app.Controllers
 
             if (targetProfile.IsPrivate)
             {
-                var pending = await db.FollowRequests.AnyAsync(r =>
-                    r.SenderId == me && r.ReceiverId == userId && r.Status == "Pending");
+                var existingReq = await db.FollowRequests
+                    .FirstOrDefaultAsync(r => r.SenderId == me && r.ReceiverId == userId);
 
-                if (!pending)
+                if (existingReq == null)
                 {
                     db.FollowRequests.Add(new FollowRequest
                     {
@@ -48,9 +48,16 @@ namespace Micro_social_app.Controllers
                         ReceiverId = userId,
                         Status = "Pending"
                     });
-                    await db.SaveChangesAsync();
                 }
+                else
+                {
+                    // dacă era Accepted/Rejected, îl refacem Pending
+                    existingReq.Status = "Pending";
+                }
+
+                await db.SaveChangesAsync();
             }
+
             else
             {
                 db.Follows.Add(new Follow
@@ -132,12 +139,15 @@ namespace Micro_social_app.Controllers
             if (req == null || req.ReceiverId != me || req.Status != "Pending")
                 return Redirect(returnUrl ?? "/Follows/Requests");
 
+            req.Status = "Accepted";
+            await db.SaveChangesAsync();   // Save #1 (status)
+
             var already = await db.Follows.AnyAsync(f => f.FollowerId == req.SenderId && f.FollowedId == me);
             if (!already)
+            {
                 db.Follows.Add(new Follow { FollowerId = req.SenderId, FollowedId = me });
-
-            req.Status = "Accepted";
-            await db.SaveChangesAsync();
+                await db.SaveChangesAsync(); // Save #2 (insert follow)
+            }
 
             TempData["message"] = "Follow request accepted.";
             TempData["messageType"] = "alert-success";
