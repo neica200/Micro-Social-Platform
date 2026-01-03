@@ -27,17 +27,51 @@
                 }
                 else
                 {
-                    <button class="btn btn-primary btn-sm fw-bold px-3 ms-2">Follow</button>
-                    <button class="btn btn-outline-secondary btn-sm fw-bold px-3 ms-2">Message</button>
+                    @if (ViewBag.IsFollowing == true)
+                    {
+                        <form asp-controller="Follows" asp-action="Unfollow" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+
+                            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold px-3 ms-2">Unfollow</button>
+                        </form>
+                    }
+                    else if (ViewBag.HasPendingRequest == true)
+                    {
+                        <form asp-controller="Follows" asp-action="CancelRequest" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+
+                            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold px-3 ms-2">
+                                Requested
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Follows" asp-action="Follow" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 ms-2">Follow</button>
+                        </form>
+                    }
+
+
                 }
+
             </div>
 
             <div class="d-flex mb-3">
                 <div class="me-4">
                     <strong>@(ViewBag.CanSeePosts == true ? ((ViewBag.Posts as IEnumerable<dynamic>)?.Count() ?? 0) : 0)</strong> posts
                 </div>
-                <div class="me-4"><strong>0</strong> followers</div>
-                <div class="me-4"><strong>0</strong> following</div>
+                <div class="me-4"><strong>@ViewBag.FollowersCount</strong> followers</div>
+                <div class="me-4"><strong>@ViewBag.FollowingCount</strong> following</div>
+
             </div>
 
             <div>

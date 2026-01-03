@@ -23,7 +23,7 @@ namespace Micro_social_app.Controllers
             _userManager = userManager;
             _supabaseClient = supabaseClient;
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> Index(string? id)
         {
@@ -57,8 +57,30 @@ namespace Micro_social_app.Controllers
             var isMe = (currentUser != null && currentUser.Id == targetUserId);
             ViewBag.IsMe = isMe;
 
+            // FOLLOW STATE (pt vizitator logat)
+            bool isFollowing = false;
+            bool hasPendingRequest = false;
 
-            var canSeePosts = isMe || !profile.IsPrivate;
+            if (!isMe && currentUser != null)
+            {
+                isFollowing = await _context.Follows
+                    .AnyAsync(f => f.FollowerId == currentUser.Id && f.FollowedId == targetUserId);
+
+                hasPendingRequest = await _context.FollowRequests
+                    .AnyAsync(r => r.SenderId == currentUser.Id
+                                && r.ReceiverId == targetUserId
+                                && r.Status == "Pending");
+            }
+
+            ViewBag.IsFollowing = isFollowing;
+            ViewBag.HasPendingRequest = hasPendingRequest;
+
+            // COUNTS
+            ViewBag.FollowersCount = await _context.Follows.CountAsync(f => f.FollowedId == targetUserId);
+            ViewBag.FollowingCount = await _context.Follows.CountAsync(f => f.FollowerId == targetUserId);
+
+            // vizibilitate postări: dacă e privat, doar eu sau followers aprobați
+            var canSeePosts = isMe || !profile.IsPrivate || isFollowing;
             ViewBag.CanSeePosts = canSeePosts;
 
             if (canSeePosts)
