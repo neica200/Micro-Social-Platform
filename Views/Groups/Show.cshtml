@@ -43,6 +43,91 @@
         </div>
     </div>
 
+    @{
+        var isApproved = (bool)(ViewBag.IsMemberApproved ?? false);
+        var isMod = (bool)(ViewBag.IsModerator ?? false);
+        var currUser = ViewBag.CurrUser as string;
+        var messages = ViewBag.Messages as List<Micro_social_app.Models.GroupMessage> ?? new();
+    }
+
+    <div class="mt-4">
+        <h4 class="mb-3">Messages</h4>
+
+        @if (isApproved || isMod)
+        {
+            <form method="post" asp-controller="GroupMessages" asp-action="Create" class="mb-4">
+                <input type="hidden" name="groupId" value="@Model.Id" />
+
+                <div class="input-group">
+                    <input name="content" class="form-control" maxlength="2000"
+                           placeholder="Write a message..." />
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </div>
+            </form>
+        }
+        else if ((bool)(ViewBag.HasPendingRequest ?? false))
+        {
+            <div class="alert alert-info">Your join request is pending. You can post after approval.</div>
+        }
+        else
+        {
+            <div class="alert alert-warning">Join this group to post messages.</div>
+        }
+
+        @if (!messages.Any())
+        {
+            <div class="text-muted">No messages yet.</div>
+        }
+        else
+        {
+            <div class="list-group">
+                @foreach (var m in messages)
+                {
+                    var authorName = m.User?.UserName ?? "User";
+                    var isMine = (m.UserId == currUser);
+
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold">@authorName</div>
+                                <div class="text-muted small">
+                                    @m.CreatedAt.ToLocalTime().ToString("g")
+                                    @if (m.UpdatedAt != null)
+                                    {
+                                        <span> • edited</span>
+                                    }
+                                </div>
+                            </div>
+
+                            @if (isMine)
+                            {
+                                <div class="d-flex gap-2">
+                                    <!-- Edit inline: simplu (fără modal) -->
+                                    <form method="post" asp-controller="GroupMessages" asp-action="Edit" class="d-flex gap-2">
+                                        <input type="hidden" name="id" value="@m.Id" />
+                                        <input name="content" class="form-control form-control-sm" value="@m.Content" maxlength="2000" />
+                                        <button class="btn btn-sm btn-outline-secondary" type="submit">Save</button>
+                                    </form>
+
+                                    <form method="post" asp-controller="GroupMessages" asp-action="Delete">
+                                        <input type="hidden" name="id" value="@m.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!isMine)
+                        {
+                            <div class="mt-2">@m.Content</div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+
     <!-- JOIN / LEAVE / STATUS -->
     <div class="mb-4">
         <div class="d-flex flex-wrap align-items-center gap-2">

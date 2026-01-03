@@ -32,14 +32,14 @@ namespace Micro_social_app.Controllers
 
             var userId = _userManager.GetUserId(User);
 
-            // 1. My Groups (I am moderator)
+            // grupurile mele
             ViewBag.MyGroups = db.Groups
                 .Include(g => g.Moderator)
                 .Where(g => g.IsDeleted == false && g.ModeratorId == userId)
                 .OrderByDescending(g => g.CreatedAt)
                 .ToList();
 
-            // 2. Groups I'm in (approved member, not moderator)
+            // grupurile in care sunt
             ViewBag.MemberGroups = db.GroupMembers
                 .Include(m => m.Group)
                     .ThenInclude(g => g.Moderator)
@@ -52,7 +52,7 @@ namespace Micro_social_app.Controllers
                 .Select(m => m.Group)
                 .ToList();
 
-            // 3. Explore Groups (not member, not moderator)
+            // explore grupuri
             ViewBag.ExploreGroups = db.Groups
                 .Include(g => g.Moderator)
                 .Where(g =>
@@ -365,10 +365,15 @@ namespace Micro_social_app.Controllers
 
             if (membership != null && membership.IsDeleted == false)
             {
-                TempData["message"] = membership.Status == "Approved"
-                    ? "You are already a member of this group."
-                    : "Your join request is already pending.";
+                if (membership.Status == "Approved")
+                    TempData["message"] = "You are already a member of this group.";
+                
+                else
+                    TempData["message"] = "Your join request is already pending.";
+                
+
                 TempData["messageType"] = "alert-warning";
+
                 return RedirectToAction("Show", new { id });
             }
 
