@@ -3,12 +3,12 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="container mt-4" style="max-width: 1100px;">
-    <div class="row g-4">
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-center gap-4">
 
-        <!-- POSTS MIDDLE -->
-        <div class="col-12 col-lg-7">
-
+        <!-- FEED (centru, lățime fixă ca IG) -->
+        <div class="feed-center w-100">
+            <!-- tabs + posts -->
             <ul class="nav nav-tabs mb-3" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#tab-following" type="button">
@@ -23,7 +23,6 @@
             </ul>
 
             <div class="tab-content">
-
                 <div class="tab-pane fade show active" id="tab-following">
                     @await Html.PartialAsync("_PostsList", Model.FollowingPosts, new ViewDataDictionary(ViewData) { { "CurrUserId", Model.CurrUserId } })
 
@@ -38,12 +37,11 @@
                 <div class="tab-pane fade" id="tab-explore">
                     @await Html.PartialAsync("_PostsList", Model.ExplorePosts, new ViewDataDictionary(ViewData) { { "CurrUserId", Model.CurrUserId } })
                 </div>
-
             </div>
         </div>
 
-        <!-- RIGHT SIDEBAR -->
-        <div class="col-12 col-lg-5">
+        <!-- SIDEBAR (dreapta) -->
+        <div class="feed-right d-none d-lg-block">
             <div class="position-sticky" style="top: 90px;">
                 @await Html.PartialAsync("_SuggestionsSidebar", Model)
             </div>
@@ -51,3 +49,4 @@
 
     </div>
 </div>
+

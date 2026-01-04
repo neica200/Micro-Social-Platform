@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -336,5 +336,51 @@ body {
     color: #dc3545;
 }
 
+/* ===== FEED COMPACT ===== */
+.feed-card {
+    margin-bottom: 1.2rem; /* mai puțin spațiu între postări */
+}
+
+    .feed-card .card-header {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .feed-card .card-body {
+        padding: 0.6rem 0.75rem;
+    }
+
+    .feed-card .card-header img {
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    .feed-card .username {
+        font-size: 0.9rem;
+    }
+
+    .feed-card .post-date {
+        font-size: 0.75rem;
+    }
+
+    .feed-card .ig-likes {
+        font-size: 0.85rem;
+    }
+
+    .feed-card .ig-caption {
+        font-size: 0.9rem;
+    }
+
+    .feed-card .ig-view-comments {
+        font-size: 0.8rem;
+    }
+
+    /* icon row mai compact */
+    .feed-card .ig-actions-row {
+        margin-bottom: 0.25rem;
+    }
+
+    .feed-card .ig-icon-btn {
+        padding: 0.25rem;
+    }
 
 

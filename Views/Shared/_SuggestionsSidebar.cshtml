@@ -1,18 +1,23 @@
 ﻿@model Micro_social_app.Models.ViewModels.FeedPageVM
 
 <div class="card mb-3 shadow-sm">
-    <div class="card-header bg-white fw-bold">Suggested profiles</div>
+    <div class="card-header bg-white fw-bold py-2" style="font-size:0.95rem;">
+        Suggested profiles
+    </div>
+
     <div class="list-group list-group-flush">
         @foreach (var p in Model.SuggestedProfiles)
         {
             var name = p.FullName ?? p.User?.UserName ?? "User";
-            <div class="list-group-item d-flex justify-content-between align-items-center">
+
+            <div class="list-group-item py-2 px-2 d-flex justify-content-between align-items-center">
                 <a asp-controller="Profiles" asp-action="Index" asp-route-id="@p.UserId"
                    class="text-decoration-none text-dark d-flex align-items-center gap-2">
-                    <img src="@p.ProfileImageUrl" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;" />
-                    <div>
-                        <div class="fw-bold">@name</div>
-                        <div class="text-muted" style="font-size:0.8rem;">@(p.IsPrivate ? "Private" : "Public")</div>
+                    <img src="@p.ProfileImageUrl" class="rounded-circle"
+                         style="width:32px;height:32px;object-fit:cover;" />
+                    <div style="line-height:1.1">
+                        <div class="fw-bold" style="font-size:0.9rem;">@name</div>
+                        <div class="text-muted" style="font-size:0.75rem;">@(p.IsPrivate ? "Private" : "Public")</div>
                     </div>
                 </a>
 
@@ -22,13 +27,14 @@
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="userId" value="@p.UserId" />
                         <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
-                        <button class="btn btn-sm btn-outline-primary">Follow</button>
+                        <button class="btn btn-sm btn-outline-primary px-2" style="font-size:0.8rem;">Follow</button>
                     </form>
                 }
             </div>
         }
     </div>
 </div>
+
 
 <div class="card shadow-sm">
     <div class="card-header bg-white fw-bold">Suggested groups</div>
