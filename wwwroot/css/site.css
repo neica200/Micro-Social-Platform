@@ -382,5 +382,14 @@ body {
     .feed-card .ig-icon-btn {
         padding: 0.25rem;
     }
+/* Feed centrat ca IG */
+.feed-center {
+    max-width: 640px; /* feed-ul (postările) */
+}
 
+/* Sidebar în dreapta */
+.feed-right {
+    width: 340px; /* sidebar (sugestii) */
+    flex: 0 0 340px;
+}
 

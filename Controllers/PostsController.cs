@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using Humanizer;
+using Micro_social_app.Services;
+
+
 
 namespace Micro_social_app.Controllers
 {
@@ -14,17 +17,20 @@ namespace Micro_social_app.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly AppDbContext db;
         private readonly IWebHostEnvironment _env;
+        private readonly IAIContentModerationService _aiModeration;
+
 
         public PostsController(
             AppDbContext context,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IWebHostEnvironment env)
+            IWebHostEnvironment env, IAIContentModerationService aiModeration)
         {
             db = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _env = env;
+            _aiModeration = aiModeration;
         }
 
         // Afisare postari
@@ -83,7 +89,7 @@ namespace Micro_social_app.Controllers
         [HttpPost]
         [Authorize(Roles = "User,Admin")] 
         [ValidateAntiForgeryToken]
-        public IActionResult New(Post post, IFormFile? ImageFile, IFormFile? VideoFile)
+        public async Task< IActionResult> New(Post post, IFormFile? ImageFile, IFormFile? VideoFile)
         {
             post.CreatedAt = DateTime.UtcNow;
             post.UserId = _userManager.GetUserId(User);
@@ -128,13 +134,25 @@ namespace Micro_social_app.Controllers
 
             if (ModelState.IsValid)
             {
+                //AI moderation 
+                if (!await _aiModeration.IsContentAllowedAsync(post.Content ?? ""))
+                {
+                    TempData["message"] = "Your content does not respect the guidelines of our app";
+                    TempData["messageType"] = "alert-danger";
+                    return View(post);
+                }
+
                 db.Posts.Add(post);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
 
                 TempData["message"] = "Postarea a fost adaugata cu succes!";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
+            var allowed = await _aiModeration.IsContentAllowedAsync(post.Content ?? "");
+            TempData["message"] = "AI allowed = " + allowed;
+            TempData["messageType"] = "alert-info";
+
 
             return View(post);
         }
@@ -165,7 +183,7 @@ namespace Micro_social_app.Controllers
         [HttpPost]
         [Authorize(Roles = "User,Admin")]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Post requestPost, IFormFile? ImageFile, IFormFile? VideoFile)
+        public async Task<IActionResult> Edit(int id, Post requestPost, IFormFile? ImageFile, IFormFile? VideoFile)
         {
             var post = db.Posts
                             .Include(p => p.User)
@@ -208,10 +226,15 @@ namespace Micro_social_app.Controllers
             {
                 ModelState.AddModelError("", "Post can't  be empty.");
             }
-
+            
             // update text
             post.Content = requestPost.Content;
-
+            if (!await _aiModeration.IsContentAllowedAsync(post.Content))
+            {
+                TempData["message"] = "Conținutul tău e nepotrivt";
+                TempData["messageType"] = "alert-danger";
+                return View(post);
+            }
             // daca user a incarcat o poza noua, o salvam si suprascriem URL-ul
             if (hasNewImg)
             {
