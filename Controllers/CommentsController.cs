@@ -3,14 +3,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Micro_social_app.Services;
 
 namespace Micro_social_app.Controllers
 {
-    public class CommentsController(AppDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager) : Controller
+    public class CommentsController(AppDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IAIContentModerationService aiModeration) : Controller
     {
         private readonly AppDbContext db = context;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+        private readonly IAIContentModerationService _aiModeration = aiModeration;
         public IActionResult Index()
         {
             return View();
@@ -19,7 +21,7 @@ namespace Micro_social_app.Controllers
         //adaugare comentariu
         [HttpPost]
         [Authorize(Roles = "User,Admin")]
-        public IActionResult New([FromForm] Comment comm)
+        public async Task<IActionResult> New([FromForm] Comment comm)
         {
             comm.UserId = _userManager.GetUserId(User);
             comm.CreatedAt = DateTime.UtcNow;
@@ -44,6 +46,12 @@ namespace Micro_social_app.Controllers
 
             if (ModelState.IsValid)
             {
+                if (!await _aiModeration.IsContentAllowedAsync(comm.Content ?? ""))
+                {
+                    TempData["message"] = "Your content does not respect the guidelines of our app";
+                    TempData["messageType"] = "alert-danger";
+                    return View(comm);
+                }
                 db.Comments.Add(comm);
                 db.SaveChanges();
                 TempData["message"] = "Comment added successfully.";
@@ -87,7 +95,7 @@ namespace Micro_social_app.Controllers
 
         [HttpPost]
         [Authorize(Roles = "User,Admin")]
-        public IActionResult Edit(int id, Comment reqComm)
+        public async Task<IActionResult> Edit(int id, Comment reqComm)
         {
             var comment = db.Comments
                             .Include(c => c.User)
@@ -118,6 +126,12 @@ namespace Micro_social_app.Controllers
 
             if (ModelState.IsValid)
             {
+                if (!await _aiModeration.IsContentAllowedAsync(reqComm.Content ?? ""))
+                {
+                    TempData["message"] = "Your content does not respect the guidelines of our app";
+                    TempData["messageType"] = "alert-danger";
+                    return View(reqComm);
+                }
                 comment.Content = reqComm.Content.Trim();
                 comment.UpdatedAt = DateTime.UtcNow;
                 db.SaveChanges();
