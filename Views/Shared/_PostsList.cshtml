@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Micro_social_app.Models.Post>
+@{
+    string currUserId = (ViewData["CurrUserId"] as string) ?? "";
+}
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-light border">No posts yet.</div>
+}
+else
+{
+    foreach (var post in Model)
+    {
+        string fullName =
+            post.User?.Profile?.FullName
+            ?? post.User?.UserName
+            ?? "User";
+
+        string profileImg = post.User?.Profile?.ProfileImageUrl ?? "";
+        string initial = !string.IsNullOrEmpty(fullName) ? fullName.Substring(0, 1).ToUpper() : "U";
+
+        int commentsCount = post.Comments?.Count ?? 0;
+        int reactionsCount = post.Reactions?.Count ?? 0;
+
+        bool isLikedByMe = false;
+        if (post.Reactions != null && !string.IsNullOrEmpty(currUserId))
+        {
+            foreach (var r in post.Reactions)
+            {
+                if (r.Type == "Like" && r.UserId == currUserId) { isLikedByMe = true; break; }
+            }
+        }
+
+        <div class="card shadow-sm feed-card">
+
+            <div class="card-header bg-white d-flex align-items-center gap-2">
+                <a asp-controller="Profiles" asp-action="Index" asp-route-id="@post.UserId" class="text-decoration-none">
+                    @if (!string.IsNullOrEmpty(profileImg))
+                    {
+                        <img src="@profileImg" class="rounded-circle" style="width:40px;height:40px;object-fit:cover;" />
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                             style="width:40px;height:40px;">
+                            @initial
+                        </div>
+                    }
+                </a>
+
+                <div>
+                    <a asp-controller="Profiles" asp-action="Index" asp-route-id="@post.UserId"
+                       class="fw-bold text-dark text-decoration-none">
+                        @fullName
+                    </a>
+
+                    <div class="text-muted" style="font-size:0.8rem;">
+                        @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(post.ImageUrl))
+            {
+                <img src="@post.ImageUrl" class="w-100" />
+            }
+            else if (!string.IsNullOrEmpty(post.VideoUrl))
+            {
+                <video class="w-100" controls>
+                    <source src="@post.VideoUrl" />
+                </video>
+            }
+
+            <div class="card-body">
+                <div class="ig-actions-row">
+                    <button type="button"
+                            class="ig-icon-btn js-like-btn @(isLikedByMe ? "ig-liked" : "")"
+                            data-postid="@post.Id"
+                            title="Like">
+                        <i class="bi @(isLikedByMe ? "bi-heart-fill" : "bi-heart")"></i>
+                    </button>
+
+                    <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id"
+                       class="ig-icon-btn ig-icon-link" title="Comment">
+                        <i class="bi bi-chat"></i>
+                    </a>
+
+                    <button type="button" class="ig-icon-btn ms-auto" title="Share">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+
+                <div class="ig-likes">
+                    <span id="likes-@post.Id">@reactionsCount</span> likes
+                </div>
+
+                @if (!string.IsNullOrEmpty(post.Content))
+                {
+                    <div class="ig-caption">
+                        <span class="ig-caption-user"><b>@fullName</b></span>
+                        <span class="ig-caption-text">@post.Content</span>
+                    </div>
+                }
+
+                <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="ig-view-comments">
+                    @(commentsCount > 0 ? $"View all {commentsCount} comments" : "Add a comment…")
+                </a>
+            </div>
+        </div>
+    }
+}

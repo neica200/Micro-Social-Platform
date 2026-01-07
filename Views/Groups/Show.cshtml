@@ -118,6 +118,12 @@
     </div>
 
     <div class="row g-4">
+    @{
+        var isApproved = (bool)(ViewBag.IsMemberApproved ?? false);
+        var isMod = (bool)(ViewBag.IsModerator ?? false);
+        var currUser = ViewBag.CurrUser as string;
+        var messages = ViewBag.Messages as IEnumerable<GroupMessage> ?? Enumerable.Empty<GroupMessage>();
+    }
 
         <!-- LEFT: CHAT -->
         <div class="col-lg-7">
@@ -128,6 +134,10 @@
                         <h5 class="mb-0">Messages</h5>
                         <div class="text-muted small">@messages.Count() message(s)</div>
                     </div>
+        @if (isApproved || isMod)
+        {
+            <form method="post" asp-controller="GroupMessages" asp-action="New" class="mb-4">
+                <input type="hidden" name="groupId" value="@Model.Id" />
 
                     <div class="d-flex gap-2 flex-wrap align-items-center">
                         @* JOIN / LEAVE / STATUS *@
@@ -187,6 +197,17 @@
                                 {
                                     <div class="avatar-circle msg-avatar">@authorInitial</div>
                                 }
+                        @if (!isMine)
+                        {
+                            <div class="mt-2">@m.Content</div>
+                        }
+                    </div>
+                }
+               
+            </div>
+        }
+    </div>
+    <div class="text-muted">Messages count: @messages.Count()</div>
 
                                 <div class="d-flex flex-column msg-col">
                                     <div class="d-flex align-items-center gap-2 @(isMine ? "justify-content-end" : "")">

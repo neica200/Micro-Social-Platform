@@ -34,9 +34,10 @@ namespace Micro_social_app.Controllers
                     p.UserId != currentUserId &&
                     p.User != null &&
                     (
-                        (p.FullName != null && EF.Functions.Like(p.FullName, $"%{q}%")) ||
-                        (p.User.UserName != null && EF.Functions.Like(p.User.UserName, $"%{q}%"))
+                        (p.FullName != null && EF.Functions.ILike(p.FullName, $"%{q}%")) ||
+                        (p.User.UserName != null && EF.Functions.ILike(p.User.UserName, $"%{q}%"))
                     )
+
                 )
                 .OrderBy(p => p.FullName ?? p.User!.UserName)
                 .Take(8)

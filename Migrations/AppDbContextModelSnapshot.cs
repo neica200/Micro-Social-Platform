@@ -63,7 +63,7 @@ namespace Micro_social_app.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AIModLogs");
+                    b.ToTable("AIModLogs", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.ApplicationUser", b =>
@@ -167,7 +167,7 @@ namespace Micro_social_app.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.Follow", b =>
@@ -193,7 +193,7 @@ namespace Micro_social_app.Migrations
                     b.HasIndex("FollowerId", "FollowedId")
                         .IsUnique();
 
-                    b.ToTable("Follows");
+                    b.ToTable("Follows", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.FollowRequest", b =>
@@ -223,7 +223,7 @@ namespace Micro_social_app.Migrations
                     b.HasIndex("SenderId", "ReceiverId")
                         .IsUnique();
 
-                    b.ToTable("FollowRequests");
+                    b.ToTable("FollowRequests", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.Group", b =>
@@ -260,7 +260,7 @@ namespace Micro_social_app.Migrations
 
                     b.HasIndex("ModeratorId");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.GroupMember", b =>
@@ -304,7 +304,7 @@ namespace Micro_social_app.Migrations
                     b.HasIndex("GroupId", "UserId")
                         .IsUnique();
 
-                    b.ToTable("GroupMembers");
+                    b.ToTable("GroupMembers", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.GroupMessage", b =>
@@ -344,7 +344,7 @@ namespace Micro_social_app.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GroupMessages");
+                    b.ToTable("GroupMessages", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.Post", b =>
@@ -385,7 +385,7 @@ namespace Micro_social_app.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.Profile", b =>
@@ -423,7 +423,7 @@ namespace Micro_social_app.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Profiles");
+                    b.ToTable("Profiles", (string)null);
                 });
 
             modelBuilder.Entity("Micro_social_app.Models.Reaction", b =>
@@ -459,7 +459,7 @@ namespace Micro_social_app.Migrations
                     b.HasIndex("UserId", "PostId")
                         .IsUnique();
 
-                    b.ToTable("Reactions");
+                    b.ToTable("Reactions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

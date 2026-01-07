@@ -63,15 +63,17 @@
 
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <!-- Notifications -->
+                            <!-- Follow Requests -->
                             <li class="nav-item">
                                 <a class="nav-link position-relative"
-                                   asp-controller="Notifications"
-                                   asp-action="Index"
-                                   title="Notifications">
-                                    <i class="bi bi-bell fs-5"></i>
+                                   asp-controller="Follows"
+                                   asp-action="Requests"
+                                   title="Follow Requests">
+                                    <i class="bi bi-person-plus fs-5"></i>
+                                    @await Component.InvokeAsync("FollowRequestsBadge")
                                 </a>
                             </li>
+
 
                             <!-- Profile dropdown -->
                             <li class="nav-item dropdown">

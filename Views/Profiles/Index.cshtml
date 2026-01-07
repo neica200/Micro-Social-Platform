@@ -27,17 +27,51 @@
                 }
                 else
                 {
-                    <button class="btn btn-primary btn-sm fw-bold px-3 ms-2">Follow</button>
-                    <button class="btn btn-outline-secondary btn-sm fw-bold px-3 ms-2">Message</button>
+                    @if (ViewBag.IsFollowing == true)
+                    {
+                        <form asp-controller="Follows" asp-action="Unfollow" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+
+                            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold px-3 ms-2">Unfollow</button>
+                        </form>
+                    }
+                    else if (ViewBag.HasPendingRequest == true)
+                    {
+                        <form asp-controller="Follows" asp-action="CancelRequest" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+
+                            <button type="submit" class="btn btn-outline-secondary btn-sm fw-bold px-3 ms-2">
+                                Requested
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-controller="Follows" asp-action="Follow" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="userId" value="@Model.UserId" />
+                            <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+
+                            <button type="submit" class="btn btn-primary btn-sm fw-bold px-3 ms-2">Follow</button>
+                        </form>
+                    }
+
+
                 }
+
             </div>
 
             <div class="d-flex mb-3">
                 <div class="me-4">
                     <strong>@(ViewBag.CanSeePosts == true ? ((ViewBag.Posts as IEnumerable<dynamic>)?.Count() ?? 0) : 0)</strong> posts
                 </div>
-                <div class="me-4"><strong>0</strong> followers</div>
-                <div class="me-4"><strong>0</strong> following</div>
+                <div class="me-4"><strong>@ViewBag.FollowersCount</strong> followers</div>
+                <div class="me-4"><strong>@ViewBag.FollowingCount</strong> following</div>
+
             </div>
 
             <div>
@@ -97,77 +131,147 @@
 
             <div class="tab-pane fade" id="feed-content">
                 <div class="row justify-content-center">
-                    <div class="col-md-8">
-                        @if (ViewBag.Posts != null)
+                    <div class="col-12 col-md-8 col-lg-6">
+
+                        @foreach (var post in (IEnumerable<Micro_social_app.Models.Post>)ViewBag.Posts)
                         {
-                            @foreach (var post in ViewBag.Posts)
+                            string fullName =
+                            post.User?.Profile?.FullName
+                            ?? post.User?.UserName
+                            ?? "User";
+
+                            string profileImg = post.User?.Profile?.ProfileImageUrl ?? "";
+                            string initial = !string.IsNullOrEmpty(fullName)
+                            ? fullName.Substring(0, 1).ToUpper()
+                            : "U";
+
+                            int commentsCount = post.Comments?.Count ?? 0;
+                            int reactionsCount = post.Reactions?.Count ?? 0;
+
+                            string currUserId = ViewBag.CurrUser as string;
+                            bool isLikedByMe = false;
+
+                            if (post.Reactions != null && !string.IsNullOrEmpty(currUserId))
                             {
-                                <div class="card mb-4 shadow-sm">
-                                    <div class="card-header bg-white d-flex align-items-center border-0 pb-0 pt-3">
-                                        <img src="@(string.IsNullOrEmpty(Model.ProfileImageUrl) ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" : Model.ProfileImageUrl)"
-                                             class="rounded-circle me-2 border"
-                                             style="width: 40px; height: 40px; object-fit: cover;">
-
-                                        <div class="d-flex flex-column">
-                                            <span class="fw-bold text-dark">@Model.FullName</span>
-                                            <small class="text-muted" style="font-size: 0.8rem;">
-                                                @post.CreatedAt.ToString("dd MMM yyyy HH:mm")
-                                            </small>
-                                        </div>
-                                    </div>
-
-                                    <div class="card-body">
-                                        <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="text-decoration-none text-dark">
-                                            @if (!string.IsNullOrEmpty(post.Content))
-                                            {
-                                                <p class="card-text mb-2">@post.Content</p>
-                                            }
-                                            @if (!string.IsNullOrEmpty(post.ImageUrl))
-                                            {
-                                                <img src="@post.ImageUrl" class="img-fluid rounded border w-100 mb-2" />
-                                            }
-                                            @if (!string.IsNullOrEmpty(post.VideoUrl))
-                                            {
-                                                <video controls class="img-fluid rounded border w-100 mb-2">
-                                                    <source src="@post.VideoUrl" type="video/mp4">
-                                                </video>
-                                            }
-                                        </a>
-                                    </div>
-
-                                    <div class="card-footer bg-white border-top-0 pt-0">
-
-                                        <div class="d-flex align-items-center text-muted mb-2" style="font-size: 0.9rem;">
-                                            <div class="me-3">
-                                                <span>❤️ @(post.Reactions?.Count ?? 0) Likes</span>
-                                            </div>
-                                            <div>
-                                                <span>💬 @(post.Comments?.Count ?? 0) Comments</span>
-                                            </div>
-                                        </div>
-
-                                        <hr class="my-1">
-
-                                        <div class="d-flex gap-2 mt-2">
-                                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
-                                                ❤️ Like
-                                            </a>
-
-                                            <a asp-controller="Posts" asp-action="Show" asp-route-id="@post.Id" class="btn btn-sm btn-light flex-grow-1 text-muted">
-                                                💬 Comment
-                                            </a>
-
-                                            <button class="btn btn-sm btn-light flex-grow-1 text-muted">
-                                                ✈️ Distribuie
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                foreach (var r in post.Reactions)
+                                {
+                                    if (r.Type == "Like" && r.UserId == currUserId)
+                                    {
+                                        isLikedByMe = true;
+                                        break;
+                                    }
+                                }
                             }
+
+                            <div class="card mb-4 shadow-sm">
+
+                                <!-- HEADER -->
+                                <div class="card-header bg-white d-flex align-items-center gap-2">
+
+                                    <a asp-controller="Profiles"
+                                       asp-action="Index"
+                                       asp-route-id="@post.UserId"
+                                       class="text-decoration-none">
+
+                                        @if (!string.IsNullOrEmpty(profileImg))
+                                        {
+                                            <img src="@profileImg"
+                                                 class="rounded-circle"
+                                                 style="width:40px;height:40px;object-fit:cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                                 style="width:40px;height:40px;">
+                                                @initial
+                                            </div>
+                                        }
+                                    </a>
+
+                                    <div>
+                                        <a asp-controller="Profiles"
+                                           asp-action="Index"
+                                           asp-route-id="@post.UserId"
+                                           class="fw-bold text-dark text-decoration-none">
+                                            @fullName
+                                        </a>
+
+                                        <div class="text-muted" style="font-size:0.8rem;">
+                                            @post.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                
+                                @if (!string.IsNullOrEmpty(post.ImageUrl))
+                                {
+                                    <img src="@post.ImageUrl" class="w-100" />
+                                }
+                                else if (!string.IsNullOrEmpty(post.VideoUrl))
+                                {
+                                    <video class="w-100" controls>
+                                        <source src="@post.VideoUrl" />
+                                    </video>
+                                }
+
+                                
+                                <div class="card-body">
+
+                                    
+                                    <div class="ig-actions-row">
+                                        <button type="button"
+                                                class="ig-icon-btn js-like-btn @(isLikedByMe ? "ig-liked" : "")"
+                                                data-postid="@post.Id"
+                                                title="Like">
+                                            <i class="bi @(isLikedByMe ? "bi-heart-fill" : "bi-heart")"></i>
+                                        </button>
+
+                                        <a asp-controller="Posts"
+                                           asp-action="Show"
+                                           asp-route-id="@post.Id"
+                                           class="ig-icon-btn ig-icon-link"
+                                           title="Comment">
+                                            <i class="bi bi-chat"></i>
+                                        </a>
+
+                                        <button type="button"
+                                                class="ig-icon-btn ms-auto"
+                                                title="Share">
+                                            <i class="bi bi-send"></i>
+                                        </button>
+                                    </div>
+
+                                    
+                                    <div class="ig-likes">
+                                        <span id="likes-@post.Id">@reactionsCount</span> likes
+                                    </div>
+
+                                   
+                                    @if (!string.IsNullOrEmpty(post.Content))
+                                    {
+                                        <div class="ig-caption">
+                                            <span class="ig-caption-user"><b>@fullName</b></span>
+                                            <span class="ig-caption-text">@post.Content</span>
+                                        </div>
+                                    }
+
+                                    
+                                    <a asp-controller="Posts"
+                                       asp-action="Show"
+                                       asp-route-id="@post.Id"
+                                       class="ig-view-comments">
+                                        @(commentsCount > 0 ? $"View all {commentsCount} comments" : "Add a comment…")
+                                    </a>
+
+                                </div>
+                            </div>
                         }
+
                     </div>
                 </div>
             </div>
+
         </div>
     }
 </div>

@@ -1,8 +1,52 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Micro_social_app.Models.ViewModels.FeedPageVM
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-center gap-4">
+
+        <!-- FEED (centru, lățime fixă ca IG) -->
+        <div class="feed-center w-100">
+            <!-- tabs + posts -->
+            <ul class="nav nav-tabs mb-3" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-bold" data-bs-toggle="tab" data-bs-target="#tab-following" type="button">
+                        Following
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-bold" data-bs-toggle="tab" data-bs-target="#tab-explore" type="button">
+                        Explore
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="tab-following">
+                    @await Html.PartialAsync("_PostsList", Model.FollowingPosts, new ViewDataDictionary(ViewData) { { "CurrUserId", Model.CurrUserId } })
+
+                    @if (Model.CurrUserId == null)
+                    {
+                        <div class="alert alert-info mt-3">
+                            Log in to see posts from people you follow.
+                        </div>
+                    }
+                </div>
+
+                <div class="tab-pane fade" id="tab-explore">
+                    @await Html.PartialAsync("_PostsList", Model.ExplorePosts, new ViewDataDictionary(ViewData) { { "CurrUserId", Model.CurrUserId } })
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR (dreapta) -->
+        <div class="feed-right d-none d-lg-block">
+            <div class="position-sticky" style="top: 90px;">
+                @await Html.PartialAsync("_SuggestionsSidebar", Model)
+            </div>
+        </div>
+
+    </div>
 </div>
+
