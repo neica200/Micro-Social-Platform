@@ -7,10 +7,8 @@ using Micro_social_app.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
-// Spunem aplicației: Când cineva cere IAIContentModerationService, dă-i GeminiModerationService
 builder.Services.AddHttpClient<IAIContentModerationService, GeminiModerationService>();
 
-//builder.Services.AddScoped<IAIContentModerationService, GeminiModerationService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
