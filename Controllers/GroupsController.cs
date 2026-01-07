@@ -137,6 +137,13 @@ namespace Micro_social_app.Controllers
                     .Where(m => m.GroupId == id && m.IsDeleted == false && m.Status == "Pending")
                     .ToList();
             }
+            var messages = db.GroupMessages
+    .Include(m => m.User)
+    .Where(m => m.GroupId == id && m.IsDeleted == false)
+    .OrderBy(m => m.CreatedAt)
+    .ToList();
+
+            ViewBag.Messages = messages;
 
             ViewBag.Messages = db.GroupMessages
                 .Where(m => m.GroupId == id && m.IsDeleted == false)

@@ -335,6 +335,239 @@ body {
 .ig-liked i {
     color: #dc3545;
 }
+.group-hero {
+    background: linear-gradient(135deg, rgba(13,110,253,.10), rgba(111,66,193,.08));
+    border: 1px solid rgba(0,0,0,.06);
+    border-radius: 18px;
+}
+
+.avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
+    flex: 0 0 auto;
+}
+
+.chat-wrap {
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.chat-header {
+    background: rgba(248,249,250, .85);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.chat-body {
+    max-height: 520px;
+    overflow: auto;
+    padding: 14px;
+    background: #fcfcfd;
+}
+
+.bubble {
+    border-radius: 16px;
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 1px 0 rgba(0,0,0,.02);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+    .bubble.mine {
+        background: rgba(13,110,253,.08);
+        border-color: rgba(13,110,253,.15);
+    }
+
+    .bubble.other {
+        background: #fff;
+    }
+
+.msg-meta {
+    font-size: .82rem;
+    color: rgba(0,0,0,.55);
+}
+
+.msg-actions button {
+    padding: 0.20rem 0.55rem;
+    font-size: .82rem;
+}
+
+.soft-card {
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 18px;
+}
+
+/* ===== GROUP PAGE ===== */
+
+.group-hero {
+    background: linear-gradient(135deg, rgba(13,110,253,.10), rgba(111,66,193,.08));
+    border: 1px solid rgba(0,0,0,.06);
+}
+
+.soft-card {
+    border-radius: 18px;
+    border: 1px solid rgba(0,0,0,.08);
+}
+
+.avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 1px solid rgba(0,0,0,.08);
+    background: #fff;
+    flex: 0 0 auto;
+}
+
+.chat-wrap {
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 18px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.chat-header {
+    background: rgba(248,249,250,.85);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+}
+
+.chat-body {
+    max-height: 520px;
+    overflow: auto;
+    padding: 14px;
+    background: #fcfcfd;
+}
+
+.chat-compose {
+    padding: 12px;
+    border-top: 1px solid rgba(0,0,0,.06);
+    background: #fff;
+}
+
+.bubble {
+    border-radius: 16px;
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.06);
+    box-shadow: 0 1px 0 rgba(0,0,0,.02);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+    .bubble.mine {
+        background: rgba(13,110,253,.08);
+        border-color: rgba(13,110,253,.15);
+    }
+
+    .bubble.other {
+        background: #fff;
+    }
+
+.msg-meta {
+    font-size: .82rem;
+    color: rgba(0,0,0,.55);
+}
+
+.msg-actions button {
+    padding: .20rem .55rem;
+    font-size: .82rem;
+}
+
+.msg-avatar {
+    width: 36px;
+    height: 36px;
+}
+
+.msg-col {
+    max-width: 85%;
+}
+
+.mini-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: .9rem;
+}
+
+
+.group-header {
+    background: linear-gradient(135deg, #f8f9ff, #ffffff);
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+    .group-header h2 {
+        font-weight: 700;
+    }
+
+.chat-box {
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #fafafa;
+}
+
+.message-row {
+    display: flex;
+    margin-bottom: 12px;
+}
+
+    .message-row.mine {
+        justify-content: flex-end;
+    }
+
+.message-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+}
+
+    .message-bubble.mine {
+        background: #e7f1ff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .message-bubble.other {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 4px;
+    }
+
+.message-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 2px;
+}
+
+.chat-input {
+    border-top: 1px solid #e5e7eb;
+    padding: 12px;
+    background: #fff;
+}
+
+.sidebar-card {
+    border-radius: 16px;
+}
 
 /* ===== FEED COMPACT ===== */
 .feed-card {
