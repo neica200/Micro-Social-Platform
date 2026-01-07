@@ -50,7 +50,7 @@ namespace Micro_social_app.Controllers
                 {
                     TempData["message"] = "Your content does not respect the guidelines of our app";
                     TempData["messageType"] = "alert-danger";
-                    return View(comm);
+                    return RedirectToAction("Show", "Posts", new { id = comm.PostId });
                 }
                 db.Comments.Add(comm);
                 db.SaveChanges();
@@ -130,7 +130,7 @@ namespace Micro_social_app.Controllers
                 {
                     TempData["message"] = "Your content does not respect the guidelines of our app";
                     TempData["messageType"] = "alert-danger";
-                    return View(reqComm);
+                    return RedirectToAction("Show", "Posts", new { id = comm.PostId });
                 }
                 comment.Content = reqComm.Content.Trim();
                 comment.UpdatedAt = DateTime.UtcNow;
