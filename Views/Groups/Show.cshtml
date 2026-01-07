@@ -1,37 +1,111 @@
 ﻿@model Micro_social_app.Models.Group
+@using Micro_social_app.Models
 
 @{
     ViewBag.Title = "Group details";
+
+    // flags (fără ??)
+    bool isApproved = false;
+    if (ViewBag.IsMemberApproved == true) { isApproved = true; }
+
+    bool isMod = false;
+    if (ViewBag.IsModerator == true) { isMod = true; }
+
+    bool isAdmin = false;
+    if (ViewBag.IsAdmin == true) { isAdmin = true; }
+
+    bool hasPending = false;
+    if (ViewBag.HasPendingRequest == true) { hasPending = true; }
+
+    string currUser = ViewBag.CurrUser as string;
+
+    // messages (fără ??)
+    IEnumerable<GroupMessage> messages;
+    if (ViewBag.Messages != null)
+    {
+        messages = (IEnumerable<GroupMessage>)ViewBag.Messages;
+    }
+    else
+    {
+        messages = new List<GroupMessage>();
+    }
+
+    // pending requests (optional)
+    dynamic pendingRequests = null;
+    if (ViewBag.PendingRequests != null)
+    {
+        pendingRequests = ViewBag.PendingRequests;
+    }
+
+    // members list
+    List<GroupMember> approvedMembers = new List<GroupMember>();
+    if (Model.GroupMembers != null)
+    {
+        approvedMembers = Model.GroupMembers
+            .Where(m => m.IsDeleted == false && m.Status == "Approved")
+            .ToList();
+    }
+
+    // group initial
+    string groupInitial = "?";
+    if (!string.IsNullOrEmpty(Model.Name))
+    {
+        groupInitial = Model.Name.Substring(0, 1).ToUpper();
+    }
 }
 
-<div class="container mt-4">
+<div class="container my-4">
 
-    <!-- GROUP HEADER -->
-    <div class="card shadow-sm mb-3">
-        <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-2">
-            <div>
-                <h2 class="mb-1">@Model.Name</h2>
-                <p class="text-muted mb-0">
-                    Created by <strong>@Model.Moderator?.UserName</strong>
-                </p>
+    <!-- HERO HEADER -->
+    <div class="card shadow-sm group-hero soft-card mb-4">
+        <div class="card-body d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div class="d-flex align-items-start gap-3">
+                <div class="avatar-circle">@groupInitial</div>
+
+                <div>
+                    <h2 class="mb-1">@Model.Name</h2>
+                    <div class="text-muted">
+                        Created by <strong>@(Model.Moderator != null ? Model.Moderator.UserName : "Unknown")</strong>
+                    </div>
+
+                    <div class="mt-2 d-flex flex-wrap gap-2">
+                        @if (isApproved)
+                        {
+                            <span class="badge text-bg-success">Member</span>
+                        }
+                        else if (hasPending)
+                        {
+                            <span class="badge text-bg-warning">Pending</span>
+                        }
+                        else
+                        {
+                            <span class="badge text-bg-secondary">Guest</span>
+                        }
+
+                        @if (isMod)
+                        {
+                            <span class="badge text-bg-primary">Moderator</span>
+                        }
+
+                        @if (isAdmin)
+                        {
+                            <span class="badge text-bg-dark">Admin</span>
+                        }
+                    </div>
+                </div>
             </div>
 
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap">
                 <a asp-action="Index" class="btn btn-outline-secondary">Back</a>
 
-                @if (ViewBag.IsModerator == true)
+                @if (isMod)
                 {
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
-                        Edit
-                    </a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit group</a>
                 }
 
-                @if (ViewBag.IsModerator == true || ViewBag.IsAdmin == true)
+                @if (isMod || isAdmin)
                 {
-                    <form asp-action="Delete"
-                          asp-route-id="@Model.Id"
-                          method="post"
-                          class="d-inline">
+                    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-inline">
                         <button class="btn btn-danger">Delete</button>
                     </form>
                 }
@@ -43,170 +117,206 @@
         </div>
     </div>
 
-    @{
-        var isApproved = (bool)(ViewBag.IsMemberApproved ?? false);
-        var isMod = (bool)(ViewBag.IsModerator ?? false);
-        var currUser = ViewBag.CurrUser as string;
-        var messages = ViewBag.Messages as List<Micro_social_app.Models.GroupMessage> ?? new();
-    }
+    <div class="row g-4">
 
-    <div class="mt-4">
-        <h4 class="mb-3">Messages</h4>
+        <!-- LEFT: CHAT -->
+        <div class="col-lg-7">
 
-        @if (isApproved || isMod)
-        {
-            <form method="post" asp-controller="GroupMessages" asp-action="Create" class="mb-4">
-                <input type="hidden" name="groupId" value="@Model.Id" />
+            <div class="chat-wrap shadow-sm">
+                <div class="chat-header p-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Messages</h5>
+                        <div class="text-muted small">@messages.Count() message(s)</div>
+                    </div>
 
-                <div class="input-group">
-                    <input name="content" class="form-control" maxlength="2000"
-                           placeholder="Write a message..." />
-                    <button class="btn btn-primary" type="submit">Send</button>
-                </div>
-            </form>
-        }
-        else if ((bool)(ViewBag.HasPendingRequest ?? false))
-        {
-            <div class="alert alert-info">Your join request is pending. You can post after approval.</div>
-        }
-        else
-        {
-            <div class="alert alert-warning">Join this group to post messages.</div>
-        }
-
-        @if (!messages.Any())
-        {
-            <div class="text-muted">No messages yet.</div>
-        }
-        else
-        {
-            <div class="list-group">
-                @foreach (var m in messages)
-                {
-                    var authorName = m.User?.UserName ?? "User";
-                    var isMine = (m.UserId == currUser);
-
-                    <div class="list-group-item">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="fw-semibold">@authorName</div>
-                                <div class="text-muted small">
-                                    @m.CreatedAt.ToLocalTime().ToString("g")
-                                    @if (m.UpdatedAt != null)
-                                    {
-                                        <span> • edited</span>
-                                    }
-                                </div>
-                            </div>
-
-                            @if (isMine)
-                            {
-                                <div class="d-flex gap-2">
-                                    <!-- Edit inline: simplu (fără modal) -->
-                                    <form method="post" asp-controller="GroupMessages" asp-action="Edit" class="d-flex gap-2">
-                                        <input type="hidden" name="id" value="@m.Id" />
-                                        <input name="content" class="form-control form-control-sm" value="@m.Content" maxlength="2000" />
-                                        <button class="btn btn-sm btn-outline-secondary" type="submit">Save</button>
-                                    </form>
-
-                                    <form method="post" asp-controller="GroupMessages" asp-action="Delete">
-                                        <input type="hidden" name="id" value="@m.Id" />
-                                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
-                                    </form>
-                                </div>
-                            }
-                        </div>
-
-                        @if (!isMine)
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        @* JOIN / LEAVE / STATUS *@
+                        @if (isApproved)
                         {
-                            <div class="mt-2">@m.Content</div>
+                            if (isMod)
+                            {
+                                <span class="badge text-bg-primary">You are moderator</span>
+                            }
+                            else
+                            {
+                                <form asp-action="Leave" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">Leave</button>
+                                </form>
+                            }
+                        }
+                        else if (hasPending)
+                        {
+                            <span class="badge text-bg-warning">Request pending</span>
+                        }
+                        else
+                        {
+                            <form asp-action="Join" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Join</button>
+                            </form>
                         }
                     </div>
-                }
+                </div>
+
+                <div class="chat-body">
+                    @if (!messages.Any())
+                    {
+                        <div class="text-muted">No messages yet. Be the first one 🙂</div>
+                    }
+                    else
+                    {
+                        foreach (var m in messages)
+                        {
+                            string authorName = "User";
+                            if (m.User != null && !string.IsNullOrEmpty(m.User.UserName))
+                            {
+                                authorName = m.User.UserName;
+                            }
+
+                            bool isMine = false;
+                            if (m.UserId == currUser) { isMine = true; }
+
+                            string authorInitial = "?";
+                            if (!string.IsNullOrEmpty(authorName))
+                            {
+                                authorInitial = authorName.Substring(0, 1).ToUpper();
+                            }
+
+                            <div class="d-flex align-items-start gap-2 mb-3 @(isMine ? "justify-content-end" : "")">
+
+                                @if (!isMine)
+                                {
+                                    <div class="avatar-circle msg-avatar">@authorInitial</div>
+                                }
+
+                                <div class="d-flex flex-column msg-col">
+                                    <div class="d-flex align-items-center gap-2 @(isMine ? "justify-content-end" : "")">
+                                        @if (!isMine)
+                                        {
+                                            <div class="fw-semibold">@authorName</div>
+                                        }
+
+                                        <div class="msg-meta">
+                                            @m.CreatedAt.ToLocalTime().ToString("g")
+                                            @if (m.UpdatedAt != null)
+                                            {
+                                                <span> • edited</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <!-- VIEW MODE -->
+                                    <div id="msg-view-@m.Id" class="bubble @(isMine ? "mine" : "other") mt-1">
+                                        @m.Content
+                                    </div>
+
+                                    <!-- EDIT MODE -->
+                                    @if (isMine)
+                                    {
+                                        <div id="msg-edit-@m.Id" class="mt-2 d-none">
+                                            <form method="post" asp-controller="GroupMessages" asp-action="Edit" class="d-flex gap-2">
+                                                <input type="hidden" name="id" value="@m.Id" />
+                                                <input name="content"
+                                                       class="form-control form-control-sm"
+                                                       value="@m.Content"
+                                                       maxlength="2000" />
+                                                <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                                                <button class="btn btn-sm btn-outline-secondary" type="button"
+                                                        onclick="toggleEdit(@m.Id, false)">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <div class="msg-actions mt-1 d-flex gap-2 justify-content-end">
+                                            <button class="btn btn-outline-secondary btn-sm" type="button"
+                                                    onclick="toggleEdit(@m.Id, true)">
+                                                Edit
+                                            </button>
+
+                                            <form method="post" asp-controller="GroupMessages" asp-action="Delete" class="d-inline">
+                                                <input type="hidden" name="id" value="@m.Id" />
+                                                <button class="btn btn-outline-danger btn-sm" type="submit">Delete</button>
+                                            </form>
+                                        </div>
+                                    }
+                                </div>
+
+                                @if (isMine)
+                                {
+                                    <div class="avatar-circle msg-avatar">@authorInitial</div>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+
+                <!-- COMPOSER -->
+                <div class="chat-compose">
+                    @if (isApproved || isMod)
+                    {
+                        <form method="post" asp-controller="GroupMessages" asp-action="New" class="d-flex gap-2">
+                            <input type="hidden" name="groupId" value="@Model.Id" />
+                            <input name="content" class="form-control" maxlength="2000" placeholder="Write a message..." />
+                            <button class="btn btn-primary" type="submit">Send</button>
+                        </form>
+                    }
+                    else if (hasPending)
+                    {
+                        <div class="alert alert-info mb-0">
+                            Your join request is pending. You can post after approval.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mb-0">
+                            Join this group to post messages.
+                        </div>
+                    }
+                </div>
             </div>
-        }
-    </div>
 
-
-    <!-- JOIN / LEAVE / STATUS -->
-    <div class="mb-4">
-        <div class="d-flex flex-wrap align-items-center gap-2">
-
-            @* APPROVED MEMBER *@
-            @if (ViewBag.IsMemberApproved == true)
-            {
-                <span class="badge bg-success">Member</span>
-
-                @* MODERATOR *@
-                @if (ViewBag.IsModerator == true)
-                {
-                    <span class="badge bg-primary">Moderator</span>
-                }
-                else
-                {
-                    @* LEAVE GROUP *@
-                    <form asp-action="Leave"
-                          asp-route-id="@Model.Id"
-                          method="post"
-                          class="d-inline">
-                        <button type="submit"
-                                class="btn btn-outline-danger">
-                            Leave group
-                        </button>
-                    </form>
-                }
-            }
-            @* PENDING *@
-            else if (ViewBag.HasPendingRequest == true)
-            {
-                <span class="badge bg-warning text-dark">
-                    Join request pending
-                </span>
-            }
-            @* NOT MEMBER *@
-            else
-            {
-                <form asp-action="Join"
-                      asp-route-id="@Model.Id"
-                      method="post"
-                      class="d-inline">
-                    <button type="submit" class="btn btn-outline-primary">
-                        Join group
-                    </button>
-                </form>
-            }
         </div>
-    </div>
 
-    <div class="row g-3">
+        <!-- RIGHT: SIDEBAR -->
+        <div class="col-lg-5">
 
-        <!-- PENDING REQUESTS (MODERATOR ONLY) -->
-        @if (ViewBag.IsModerator == true)
-        {
-            <div class="col-lg-6">
-                <div class="card shadow-sm h-100">
+            @if (isMod)
+            {
+                <div class="card shadow-sm soft-card mb-4">
                     <div class="card-body">
-                        <h4 class="mb-3">Pending requests</h4>
+                        <h5 class="mb-3">Pending requests</h5>
 
-                        @if (ViewBag.PendingRequests != null && ViewBag.PendingRequests.Count > 0)
+                        @if (pendingRequests != null && pendingRequests.Count > 0)
                         {
                             <ul class="list-group">
-                                @foreach (var m in ViewBag.PendingRequests)
+                                @foreach (var req in pendingRequests)
                                 {
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>@m.User?.UserName</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-circle mini-avatar">
+                                                @{
+                                                    string p = "?";
+                                                    if (req.User != null && !string.IsNullOrEmpty(req.User.UserName))
+                                                    {
+                                                        p = req.User.UserName.Substring(0, 1).ToUpper();
+                                                    }
+                                                }
+                                                @p
+                                            </div>
+                                            <strong>@req.User?.UserName</strong>
+                                        </div>
 
                                         <div class="d-flex gap-2">
-                                            <form asp-action="Approve" method="post">
+                                            <form asp-action="Approve" method="post" class="d-inline">
                                                 <input type="hidden" name="groupId" value="@Model.Id" />
-                                                <input type="hidden" name="userId" value="@m.UserId" />
+                                                <input type="hidden" name="userId" value="@req.UserId" />
                                                 <button class="btn btn-sm btn-success">Approve</button>
                                             </form>
 
-                                            <form asp-action="Reject" method="post">
+                                            <form asp-action="Reject" method="post" class="d-inline">
                                                 <input type="hidden" name="groupId" value="@Model.Id" />
-                                                <input type="hidden" name="userId" value="@m.UserId" />
-                                                <button class="btn btn-sm btn-danger">Reject</button>
+                                                <input type="hidden" name="userId" value="@req.UserId" />
+                                                <button class="btn btn-sm btn-outline-danger">Reject</button>
                                             </form>
                                         </div>
                                     </li>
@@ -219,20 +329,14 @@
                         }
                     </div>
                 </div>
-            </div>
-        }
+            }
 
-        <!-- MEMBERS + KICK -->
-        <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
+            <div class="card shadow-sm soft-card">
                 <div class="card-body">
-                    <h4 class="mb-3">Members</h4>
-
-                    @{
-                        var approvedMembers = Model.GroupMembers
-                        .Where(m => m.IsDeleted == false && m.Status == "Approved")
-                        .ToList();
-                    }
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">Members</h5>
+                        <span class="text-muted small">@approvedMembers.Count member(s)</span>
+                    </div>
 
                     @if (approvedMembers.Count == 0)
                     {
@@ -241,37 +345,44 @@
                     else
                     {
                         <ul class="list-group">
-                            @foreach (var m in approvedMembers)
+                            @foreach (var mem in approvedMembers)
                             {
-                                bool isGroupModerator =
-                                (m.UserId == Model.ModeratorId) ||
-                                (m.Role == "Moderator");
+                                bool isGroupModerator = false;
+                                if (mem.UserId == Model.ModeratorId) { isGroupModerator = true; }
+                                if (mem.Role == "Moderator") { isGroupModerator = true; }
 
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>@m.User?.UserName</strong>
-                                        @if (isGroupModerator)
-                                        {
-                                            <span class="badge bg-primary ms-2">Moderator</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success ms-2">Member</span>
-                                        }
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar-circle mini-avatar">
+                                            @{
+                                                string u = "?";
+                                                if (mem.User != null && !string.IsNullOrEmpty(mem.User.UserName))
+                                                {
+                                                    u = mem.User.UserName.Substring(0, 1).ToUpper();
+                                                }
+                                            }
+                                            @u
+                                        </div>
+
+                                        <div>
+                                            <div class="fw-semibold">@mem.User?.UserName</div>
+                                            @if (isGroupModerator)
+                                            {
+                                                <span class="badge text-bg-primary">Moderator</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge text-bg-success">Member</span>
+                                            }
+                                        </div>
                                     </div>
 
-                                    @* KICK *@
-                                    @if (ViewBag.IsModerator == true && !isGroupModerator)
+                                    @if (isMod && !isGroupModerator)
                                     {
-                                        <form asp-action="Kick"
-                                              method="post"
-                                              class="d-inline">
+                                        <form asp-action="Kick" method="post" class="d-inline">
                                             <input type="hidden" name="groupId" value="@Model.Id" />
-                                            <input type="hidden" name="userId" value="@m.UserId" />
-                                            <button class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Remove this user from the group?');">
-                                                Kick
-                                            </button>
+                                            <input type="hidden" name="userId" value="@mem.UserId" />
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">Kick</button>
                                         </form>
                                     }
                                 </li>
@@ -280,7 +391,24 @@
                     }
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 </div>
+
+<script>
+    function toggleEdit(id, on) {
+        const view = document.getElementById("msg-view-" + id);
+        const edit = document.getElementById("msg-edit-" + id);
+
+        if (!view || !edit) return;
+
+        if (on) {
+            view.classList.add("d-none");
+            edit.classList.remove("d-none");
+        } else {
+            edit.classList.add("d-none");
+            view.classList.remove("d-none");
+        }
+    }
+</script>
