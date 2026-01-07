@@ -118,12 +118,7 @@
     </div>
 
     <div class="row g-4">
-    @{
-        var isApproved = (bool)(ViewBag.IsMemberApproved ?? false);
-        var isMod = (bool)(ViewBag.IsModerator ?? false);
-        var currUser = ViewBag.CurrUser as string;
-        var messages = ViewBag.Messages as IEnumerable<GroupMessage> ?? Enumerable.Empty<GroupMessage>();
-    }
+
 
         <!-- LEFT: CHAT -->
         <div class="col-lg-7">
@@ -134,10 +129,6 @@
                         <h5 class="mb-0">Messages</h5>
                         <div class="text-muted small">@messages.Count() message(s)</div>
                     </div>
-        @if (isApproved || isMod)
-        {
-            <form method="post" asp-controller="GroupMessages" asp-action="New" class="mb-4">
-                <input type="hidden" name="groupId" value="@Model.Id" />
 
                     <div class="d-flex gap-2 flex-wrap align-items-center">
                         @* JOIN / LEAVE / STATUS *@
@@ -167,7 +158,7 @@
                     </div>
                 </div>
 
-                <div class="chat-body">
+                <div class="chat-body p-3">
                     @if (!messages.Any())
                     {
                         <div class="text-muted">No messages yet. Be the first one 🙂</div>
@@ -176,20 +167,15 @@
                     {
                         foreach (var m in messages)
                         {
-                            string authorName = "User";
-                            if (m.User != null && !string.IsNullOrEmpty(m.User.UserName))
-                            {
-                                authorName = m.User.UserName;
-                            }
+                            var authorName = (m.User != null && !string.IsNullOrEmpty(m.User.UserName))
+                            ? m.User.UserName
+                            : "User";
 
-                            bool isMine = false;
-                            if (m.UserId == currUser) { isMine = true; }
+                            var isMine = (m.UserId == currUser);
 
-                            string authorInitial = "?";
-                            if (!string.IsNullOrEmpty(authorName))
-                            {
-                                authorInitial = authorName.Substring(0, 1).ToUpper();
-                            }
+                            var authorInitial = !string.IsNullOrEmpty(authorName)
+                            ? authorName.Substring(0, 1).ToUpper()
+                            : "?";
 
                             <div class="d-flex align-items-start gap-2 mb-3 @(isMine ? "justify-content-end" : "")">
 
@@ -197,17 +183,6 @@
                                 {
                                     <div class="avatar-circle msg-avatar">@authorInitial</div>
                                 }
-                        @if (!isMine)
-                        {
-                            <div class="mt-2">@m.Content</div>
-                        }
-                    </div>
-                }
-               
-            </div>
-        }
-    </div>
-    <div class="text-muted">Messages count: @messages.Count()</div>
 
                                 <div class="d-flex flex-column msg-col">
                                     <div class="d-flex align-items-center gap-2 @(isMine ? "justify-content-end" : "")">
@@ -236,10 +211,8 @@
                                         <div id="msg-edit-@m.Id" class="mt-2 d-none">
                                             <form method="post" asp-controller="GroupMessages" asp-action="Edit" class="d-flex gap-2">
                                                 <input type="hidden" name="id" value="@m.Id" />
-                                                <input name="content"
-                                                       class="form-control form-control-sm"
-                                                       value="@m.Content"
-                                                       maxlength="2000" />
+                                                <input name="content" class="form-control form-control-sm"
+                                                       value="@m.Content" maxlength="2000" />
                                                 <button class="btn btn-sm btn-primary" type="submit">Save</button>
                                                 <button class="btn btn-sm btn-outline-secondary" type="button"
                                                         onclick="toggleEdit(@m.Id, false)">
@@ -272,7 +245,7 @@
                 </div>
 
                 <!-- COMPOSER -->
-                <div class="chat-compose">
+                <div class="chat-compose p-3">
                     @if (isApproved || isMod)
                     {
                         <form method="post" asp-controller="GroupMessages" asp-action="New" class="d-flex gap-2">
