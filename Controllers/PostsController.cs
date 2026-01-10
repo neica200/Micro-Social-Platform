@@ -117,7 +117,7 @@ namespace Micro_social_app.Controllers
             bool hasVid = VideoFile != null && VideoFile.Length > 0;
 
             if (!hasText && !hasImg && !hasVid)
-                ModelState.AddModelError("", "Postarea nu poate fi goală. Adaugă text sau o poză/video.");
+                ModelState.AddModelError("", "Post can't be empty! Add a text, photo or video.");
 
             // salveaza fisierul (optional)
             if (hasImg)
@@ -145,7 +145,7 @@ namespace Micro_social_app.Controllers
                 db.Posts.Add(post);
                 await db.SaveChangesAsync();
 
-                TempData["message"] = "Postarea a fost adaugata cu succes!";
+                TempData["message"] = "Post successfully added!";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
@@ -173,7 +173,7 @@ namespace Micro_social_app.Controllers
                 return View(post);
             else
             {
-                TempData["message"] = "Nu aveti dreptul sa editati o postare care nu va apartine.";
+                TempData["message"] = "You are not allowed a edit a post that is not yours!";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index");
             }
@@ -195,7 +195,7 @@ namespace Micro_social_app.Controllers
 
             if (post.UserId != _userManager.GetUserId(User))
             {
-                TempData["message"] = "Nu aveti puteti modifica o postare care nu este a dvs.";
+                TempData["message"] = "You are not allowed a edit a post that is not yours!";
                 TempData["messageType"] = "alert-danger";
                 return RedirectToAction("Index");
             }
@@ -231,7 +231,7 @@ namespace Micro_social_app.Controllers
             post.Content = requestPost.Content;
             if (!await _aiModeration.IsContentAllowedAsync(post.Content))
             {
-                TempData["message"] = "Conținutul tău e nepotrivt";
+                TempData["message"] = "Your content does not respect the guidelines of our app";
                 TempData["messageType"] = "alert-danger";
                 return View(post);
             }

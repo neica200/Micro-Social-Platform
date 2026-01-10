@@ -9,7 +9,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Profilul Meu</h4>
+                    <h4 class="mb-0">My Profile</h4>
                 </div>
                 <div class="card-body">
 
@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ImageUpload" class="form-label fw-bold">Schimbă Poza</label>
+                            <label asp-for="ImageUpload" class="form-label fw-bold">Change photo</label>
                             <input asp-for="ImageUpload" class="form-control" type="file" accept="image/*" />
                             <span asp-validation-for="ImageUpload" class="text-danger"></span>
                         </div>
@@ -38,13 +38,13 @@
                         <hr />
 
                         <div class="mb-3">
-                            <label asp-for="FullName" class="form-label">Nume Complet</label>
+                            <label asp-for="FullName" class="form-label">Full name</label>
                             <input asp-for="FullName" class="form-control" placeholder="Cum te numești?" />
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Despre tine</label>
+                            <label asp-for="Description" class="form-label">About you</label>
                             <textarea asp-for="Description" class="form-control" rows="4" placeholder="Scrie ceva despre tine..."></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
@@ -57,7 +57,7 @@
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-success btn-lg">Salvează Modificările</button>
+                            <button type="submit" class="btn btn-success btn-lg">Save</button>
                         </div>
 
                     </form>

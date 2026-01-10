@@ -4,7 +4,7 @@
 @{
     ViewBag.Title = "Group details";
 
-    // flags (fără ??)
+    // flags 
     bool isApproved = false;
     if (ViewBag.IsMemberApproved == true) { isApproved = true; }
 
@@ -19,7 +19,7 @@
 
     string currUser = ViewBag.CurrUser as string;
 
-    // messages (fără ??)
+    // messages 
     IEnumerable<GroupMessage> messages;
     if (ViewBag.Messages != null)
     {
@@ -30,7 +30,7 @@
         messages = new List<GroupMessage>();
     }
 
-    // pending requests (optional)
+    // pending requests 
     dynamic pendingRequests = null;
     if (ViewBag.PendingRequests != null)
     {

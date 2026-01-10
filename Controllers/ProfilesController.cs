@@ -50,7 +50,7 @@ namespace Micro_social_app.Controllers
             if (profile == null)
             {
                 if (currentUser != null && targetUserId == currentUser.Id) return RedirectToAction("Edit");
-                return NotFound("Profil inexistent.");
+                return NotFound("Profile not found!");
             }
 
             //E profilul meu?
@@ -169,7 +169,7 @@ namespace Micro_social_app.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Eroare upload: " + ex.Message);
+                    ModelState.AddModelError("", "Error upload: " + ex.Message);
                     return View(profileForm);
                 }
             }

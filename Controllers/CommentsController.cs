@@ -130,7 +130,7 @@ namespace Micro_social_app.Controllers
                 {
                     TempData["message"] = "Your content does not respect the guidelines of our app";
                     TempData["messageType"] = "alert-danger";
-                    return RedirectToAction("Show", "Posts", new { id = comm.PostId });
+                    return RedirectToAction("Show", "Posts", new { id = reqComm.PostId });
                 }
                 comment.Content = reqComm.Content.Trim();
                 comment.UpdatedAt = DateTime.UtcNow;
