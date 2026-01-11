@@ -176,5 +176,32 @@ namespace Micro_social_app.Controllers
             return Redirect(returnUrl ?? "/Follows/Requests");
         }
 
+        public IActionResult FollowersPartial(string userId)
+        {
+            var followers = db.Follows
+                .Include(f => f.Follower)
+                    .ThenInclude(u => u.Profile)
+                .Where(f => f.FollowedId == userId)
+                .Select(f => f.Follower)
+                .ToList();
+
+            return PartialView("_FollowListPartial", followers);
+        }
+
+
+        public IActionResult FollowingPartial(string userId)
+        {
+            var following = db.Follows
+                .Include(f => f.Followed)
+                    .ThenInclude(u => u.Profile)
+                .Where(f => f.FollowerId == userId)
+                .Select(f => f.Followed)
+                .ToList();
+
+            return PartialView("_FollowListPartial", following);
+        }
+
+
+
     }
 }

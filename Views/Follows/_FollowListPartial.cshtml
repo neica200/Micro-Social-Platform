@@ -1,0 +1,32 @@
+﻿@model IEnumerable<Micro_social_app.Models.ApplicationUser>
+
+@foreach (var user in Model)
+{
+    var p = user.Profile;
+    string name = p?.FullName ?? user.UserName;
+    string img = p?.ProfileImageUrl;
+
+    <div class="d-flex align-items-center mb-3">
+        <a asp-controller="Profiles"
+           asp-action="Index"
+           asp-route-id="@user.Id"
+           class="d-flex align-items-center text-decoration-none text-dark w-100">
+
+            @if (!string.IsNullOrEmpty(img))
+            {
+                <img src="@img" class="rounded-circle me-3"
+                     style="width:45px;height:45px;object-fit:cover;" />
+            }
+            else
+            {
+                <div class="rounded-circle bg-secondary text-white d-flex
+                                    align-items-center justify-content-center me-3"
+                     style="width:45px;height:45px;">
+                    @name.Substring(0, 1)
+                </div>
+            }
+
+            <div class="fw-bold">@name</div>
+        </a>
+    </div>
+}

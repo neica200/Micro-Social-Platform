@@ -69,8 +69,24 @@
                 <div class="me-4">
                     <strong>@(ViewBag.CanSeePosts == true ? ((ViewBag.Posts as IEnumerable<dynamic>)?.Count() ?? 0) : 0)</strong> posts
                 </div>
-                <div class="me-4"><strong>@ViewBag.FollowersCount</strong> followers</div>
-                <div class="me-4"><strong>@ViewBag.FollowingCount</strong> following</div>
+                <div class="me-4">
+                    <a href="#"
+                       class="text-dark text-decoration-none js-follow-open"
+                       data-userid="@Model.UserId"
+                       data-type="followers">
+                        <strong>@ViewBag.FollowersCount</strong> followers
+                    </a>
+                </div>
+
+                <div class="me-4">
+                    <a href="#"
+                       class="text-dark text-decoration-none js-follow-open"
+                       data-userid="@Model.UserId"
+                       data-type="following">
+                        <strong>@ViewBag.FollowingCount</strong> following
+                    </a>
+                </div>
+
 
             </div>
 
@@ -275,3 +291,43 @@
         </div>
     }
 </div>
+
+<!-- FOLLOW MODAL -->
+<div class="modal fade" id="followModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="followModalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="followModalBody">
+                <div class="text-center text-muted">Loading...</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.js-follow-open').forEach(el => {
+        el.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const userId = this.dataset.userid;
+            const type = this.dataset.type;
+
+            document.getElementById("followModalTitle").innerText =
+                type === "followers" ? "Followers" : "Following";
+
+            fetch(`/Follows/${type === "followers" ? "FollowersPartial" : "FollowingPartial"}?userId=${userId}`)
+                .then(r => r.text())
+                .then(html => {
+                    document.getElementById("followModalBody").innerHTML = html;
+                    new bootstrap.Modal(document.getElementById('followModal')).show();
+                });
+        });
+    });
+</script>
+
