@@ -22,7 +22,7 @@ namespace Micro_social_app.Models
         public DbSet<Group> Groups { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<GroupMessage> GroupMessages { get; set; }
-        public DbSet<AIModLog> AIModLogs { get; set; }
+     
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -150,13 +150,7 @@ namespace Micro_social_app.Models
                 .HasForeignKey(gm => gm.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // AI MOD LOG
-            builder.Entity<AIModLog>()
-                .HasOne(log => log.User)
-                .WithMany(u => u.AIModLogs)
-                .HasForeignKey(log => log.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
+         
         }
 
         

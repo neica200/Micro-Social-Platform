@@ -1,0 +1,41 @@
+﻿@model List<Micro_social_app.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Admin - Users";
+}
+
+<div class="container my-4">
+    <h2 class="mb-3">Users</h2>
+
+  
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <td>@u.UserName</td>
+                            <td>@u.Email</td>
+                            <td class="text-end">
+                                <form method="post" asp-action="Delete" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

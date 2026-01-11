@@ -12,7 +12,8 @@
             <div class="h-100 p-5 rounded-4 bg-dark text-white shadow-sm">
                 <h1 class="fw-bold mb-3">Join MicroSocial</h1>
                 <p class="text-white-50 mb-4">
-                    Creează-ți contul și începe să postezi, să urmărești alți utilizatori și să descoperi conținut nou.
+                    Create your account and start posting, following other users, and discovering new content.
+
                 </p>
 
                 <div class="d-flex align-items-center gap-3 mb-3">
@@ -21,8 +22,10 @@
                         <i class="bi bi-person-plus-fill"></i>
                     </div>
                     <div>
-                        <div class="fw-semibold">Profil personal</div>
-                        <div class="text-white-50 small">Poți seta profil public sau privat</div>
+                        <div class="fw-semibold">Profile</div>
+                        <div class="text-white-50 small">
+                            You can set your profile to public or private.
+                        </div>
                     </div>
                 </div>
 
@@ -32,8 +35,8 @@
                         <i class="bi bi-camera-fill"></i>
                     </div>
                     <div>
-                        <div class="fw-semibold">Postări & media</div>
-                        <div class="text-white-50 small">Poze, video și reacții</div>
+                        <div class="fw-semibold">Posts & media </div>
+                        <div class="text-white-50 small">Posts, videos and likes</div>
                     </div>
                 </div>
 
@@ -44,7 +47,7 @@
                     </div>
                     <div>
                         <div class="fw-semibold">Search & Live Search</div>
-                        <div class="text-white-50 small">Găsești rapid alți utilizatori</div>
+                        <div class="text-white-50 small">Find other users</div>
                     </div>
                 </div>
             </div>
@@ -56,7 +59,9 @@
                 <div class="card-body p-4 p-md-5">
 
                     <h2 class="fw-bold mb-1">Create account</h2>
-                    <p class="text-muted mb-4">Completează datele pentru a te înregistra.</p>
+                    <p class="text-muted mb-4">
+                        Fill in your details to register.
+                    </p>
 
                     <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -90,7 +95,7 @@
                         </button>
 
                         <div class="text-center mt-3">
-                            <span class="text-muted">Ai deja cont?</span>
+                            <span class="text-muted">Have an account?</span>
                             <a asp-page="./Login"
                                asp-route-returnUrl="@Model.ReturnUrl"
                                class="text-decoration-none fw-semibold">

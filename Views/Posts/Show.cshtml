@@ -1,5 +1,4 @@
 ﻿@model Micro_social_app.Models.Post
-@Html.AntiForgeryToken()
 
 @{
     string initial = "?";
@@ -99,7 +98,7 @@
                                   asp-controller="Posts"
                                   asp-action="Delete"
                                   asp-route-id="@Model.Id">
-                                @Html.AntiForgeryToken()
+                             
                                 <button class="btn btn-sm btn-outline-danger" type="submit">
                                     Delete
                                 </button>
@@ -223,9 +222,11 @@
                                         </div>
                                     </div>
 
-                                    @if (ViewBag.IsAdmin == true || ViewBag.CurrUser == comment.UserId)
-                                    {
-                                        <div class="ig-comment-actions">
+                                    <div class="ig-comment-actions">
+
+                                        @* EDIT *@
+                                        @if (ViewBag.CurrUser == comment.UserId)
+                                        {
                                             <a class="ig-icon-btn"
                                                asp-controller="Comments"
                                                asp-action="Edit"
@@ -233,23 +234,28 @@
                                                title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
+                                        }
 
+                                        @* DELETE *@
+                                        @if (ViewBag.IsAdmin == true || ViewBag.CurrUser == comment.UserId)
+                                        {
                                             <form method="post"
                                                   asp-controller="Comments"
                                                   asp-action="Delete"
                                                   asp-route-id="@comment.Id"
                                                   class="d-inline">
-                                                @Html.AntiForgeryToken()
+                                              
                                                 <button class="ig-icon-btn ig-danger" type="submit" title="Delete">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    }
+                                        }
+
+                                    </div>
+                                </div> 
+                            } 
+                        </div> 
+                    } 
 
                     <!-- ADD COMMENT -->
                     <div class="ig-add-comment mt-3">
@@ -259,7 +265,6 @@
                                   asp-controller="Comments"
                                   asp-action="New"
                                   class="ig-add-comment-form d-flex gap-2 align-items-center">
-                                @Html.AntiForgeryToken()
                                 <input type="hidden" name="PostId" value="@Model.Id" />
 
                                 <input name="Content"
@@ -280,9 +285,9 @@
                         }
                     </div>
 
-                </div>
+                </div> 
 
-            </div>
+            </div> 
 
         </div>
     </div>

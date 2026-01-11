@@ -137,22 +137,24 @@ namespace Micro_social_app.Controllers
                     .Where(m => m.GroupId == id && m.IsDeleted == false && m.Status == "Pending")
                     .ToList();
             }
-            var messages = db.GroupMessages
-    .Include(m => m.User)
-    .Where(m => m.GroupId == id && m.IsDeleted == false)
-    .OrderBy(m => m.CreatedAt)
-    .ToList();
+           ;
 
-            ViewBag.Messages = messages;
+            if (isModerator == true || ViewBag.IsMemberApproved == true)
+            {
 
-            ViewBag.Messages = db.GroupMessages
-                .Where(m => m.GroupId == id && m.IsDeleted == false)
-                .Include(m => m.User)
-                .OrderByDescending(m => m.CreatedAt)
-                .ToList();
+                ViewBag.Messages = db.GroupMessages
+                    .Where(m => m.GroupId == id && m.IsDeleted == false)
+                    .Include(m => m.User)
+                    .OrderBy(m => m.CreatedAt)
+                    .ToList();
+            }
+            else
+            {
+                ViewBag.Messages = new List<GroupMessage>();
+            }
 
 
-            return View(group);
+                return View(group);
         }
 
       

@@ -39,20 +39,20 @@
 
                         <div class="mb-3">
                             <label asp-for="FullName" class="form-label">Full name</label>
-                            <input asp-for="FullName" class="form-control" placeholder="Cum te numești?" />
+                            <input asp-for="FullName" class="form-control" placeholder="What's your name?'" />
                             <span asp-validation-for="FullName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label">About you</label>
-                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Scrie ceva despre tine..."></textarea>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Write something about you..."></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
                         <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" asp-for="IsPrivate" />
                             <label class="form-check-label" asp-for="IsPrivate">
-                                Profil Privat
+                                Private profile
                             </label>
                         </div>
 

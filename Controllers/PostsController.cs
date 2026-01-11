@@ -147,7 +147,7 @@ namespace Micro_social_app.Controllers
 
                 TempData["message"] = "Post successfully added!";
                 TempData["messageType"] = "alert-success";
-                return RedirectToAction("Index");
+                return RedirectToAction( "Index", "Profiles");
             }
             var allowed = await _aiModeration.IsContentAllowedAsync(post.Content ?? "");
             TempData["message"] = "AI allowed = " + allowed;
