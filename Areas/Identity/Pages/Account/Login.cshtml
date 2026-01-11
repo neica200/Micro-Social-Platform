@@ -11,7 +11,8 @@
             <div class="h-100 p-5 rounded-4 bg-dark text-white shadow-sm">
                 <h1 class="fw-bold mb-3">MicroSocial</h1>
                 <p class="text-white-50 mb-4">
-                    Conectează-te ca să vezi postări, reacții și profiluri. Caută rapid utilizatori din bara de sus și intră pe profilurile lor.
+                    Log in to see posts, reactions, and profiles. Quickly search for users using the top bar and visit their profiles.
+
                 </p>
 
                 <div class="d-flex align-items-center gap-3 mb-3">
@@ -20,8 +21,10 @@
                         <i class="bi bi-people-fill"></i>
                     </div>
                     <div>
-                        <div class="fw-semibold">Explorează profile</div>
-                        <div class="text-white-50 small">Publice sau private (postările private sunt protejate)</div>
+                        <div class="fw-semibold">Explore profiles</div>
+                        <div class="text-white-50 small">
+                            Public or private (private posts are protected).
+                        </div>
                     </div>
                 </div>
 
@@ -32,7 +35,7 @@
                     </div>
                     <div>
                         <div class="fw-semibold">Search + Live Search</div>
-                        <div class="text-white-50 small">Găsești useri instant din navbar</div>
+                        <div class="text-white-50 small">Instant find users from navbar</div>
                     </div>
                 </div>
             </div>
@@ -43,7 +46,7 @@
             <div class="card shadow-sm border-0 rounded-4">
                 <div class="card-body p-4 p-md-5">
                     <h2 class="fw-bold mb-1">Welcome back</h2>
-                    <p class="text-muted mb-4">Autentifică-te în contul tău.</p>
+                    <p class="text-muted mb-4">Login in your account</p>
 
                     <form id="account" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
@@ -76,7 +79,7 @@
                         </button>
 
                         <div class="text-center mt-3">
-                            <span class="text-muted">Nu ai cont?</span>
+                            <span class="text-muted">Not having an account?</span>
                             <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="text-decoration-none fw-semibold">
                                 Register
                             </a>
