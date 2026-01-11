@@ -56,10 +56,18 @@
                                  style="top: 100%; z-index: 9999; display: none;">
                             </div>
                         </form>
-                    
+          
+
 
                     <!-- RIGHT MENU -->
                     <ul class="navbar-nav ms-auto align-items-center gap-2">
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="AdminUsers" asp-action="Index">Users</a>
+                            </li>
+                        }
 
                         @if (User.Identity.IsAuthenticated)
                         {
